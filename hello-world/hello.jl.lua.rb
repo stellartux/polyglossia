@@ -16,4 +16,4 @@ puts("Hello from Lua!")
 
 --[[
 =end # Code visible to Julia, Lua and Ruby =##]]
-puts("Hello from Julia, Lua and Ruby!")
+puts("Hello from \x1b[35mJulia, \x1b[94mLua\x1b[m and \x1b[91mRuby\x1b[m!")

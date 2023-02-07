@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 #= Code here is only visible to Ruby
 
-println = puts
-println "Hello from Ruby!"
+puts "Hello from Ruby!"
 
 =begin # Code here is only visible to Julia =#
 puts = println
@@ -10,4 +9,4 @@ puts("Hello from Julia!")
 
 #=
 =end # Code here is visible to Julia and Ruby =#
-println("Hello from Julia and Ruby!")
+puts("Hello from \x1b[35mJulia\x1b[m and \x1b[91mRuby\x1b[m!")

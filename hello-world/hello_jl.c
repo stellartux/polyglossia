@@ -4,17 +4,19 @@
 
 hello() = println("Hello from Julia!")
 puts = println
+start = nothing
 
 #= Code only visible to C */
 #define function int
-#define nothing {
+#define start {
 #define end }
 
 void hello() { puts("Hello from C!"); }
 
 // Code visible to C and Julia =#
 
-function main() nothing
+function main()
+start
     hello();
     puts("Hello from C and Julia!");
 end
