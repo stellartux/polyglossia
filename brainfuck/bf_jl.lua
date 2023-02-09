@@ -5,8 +5,7 @@ nothing # Code here is only visible to Julia
 
 module Brainfuck
 begin
-Base.:*(x, f::Function) = f(x)
-then(b::Bool) = b
+then = true
 not = !
 table = (remove = (t, _...) -> popfirst!(t),)
 pcall(f, xs...) =
@@ -17,7 +16,6 @@ pcall(f, xs...) =
 debug = (
     getlocal=(_...) -> isempty(ARGS) && abspath(PROGRAM_FILE) != @__FILE__,
 )
-or(b) = a -> a ? a : b
 
 #= Code here is only visible to Lua ]]
 
@@ -47,12 +45,10 @@ local function filter(fn, s)
     return chars
 end
 
+local function foreach(fn, xs) for _,v in ipairs(xs) do fn(v) end end
 local function get(xs, k, d) return k and xs[k] or d end
 local function isempty(xs) return #xs == 0 end
-local function last(xs) return xs[#xs] end
 local function lastindex(xs) return #xs end
-local length = lastindex
-local nothing = nil
 
 local function occursin(s, ss)
     if ss then
@@ -78,12 +74,8 @@ local readline = io.read
 local function sign(x) return x > 0 and 1 or x < 0 and -1 or 0 end
 local function Vector(_) return function() return {} end end
 
-local function zeros(_, len)
-    local zs = {}
-    for i = 1, len do
-        zs[i] = 0
-    end
-    return zs
+local function zeros(_, _)
+    return setmetatable({}, { __index = function(...) return 0 end })
 end
 
 -- Code here is visible to Lua and Julia =#
@@ -143,26 +135,24 @@ _=#_G; Brainfuck.run = --[[
 0; "Executes the given brainfuck program."
 run = #]]
 function (code)
-    interpret(zeros(UInt8, 30000), 1, collect(code), 1)
+    interpret(zeros(UInt8, 30000), 1, filter(occursin("+-,.[]<>"), code), 1)
 end
 
 _=#_G; Brainfuck.runfile = --[[
 0; "Loads and runs the brainfuck file with the given filename."
 runfile = #]]
-function (filename)
-    Brainfuck.run(filter(occursin("+-,.[]<>"), readchomp(filename)))
-end
+function (filename) Brainfuck.run(readchomp(filename)) end
 
 if pcall(debug.getlocal, 4, 1) then
     return Brainfuck
-elseif (length(ARGS) == 0)or(get(ARGS, 1, nothing) == "--help")then
+elseif get(ARGS, 1, "--hepl") == "--help" then
     println("Julia/Lua Polyglot Brainfuck Interpreter")
-    println("Usage: (julia|lua) bf_julia.lua FILENAME")
+    println("Usage: (julia|lua) bf_jl.lua FILENAMES...")
     println("or load the Brainfuck module")
-    println("   in Julia: include(\"bf_julia.lua\")")
-    println("   in Lua: Brainfuck = require(\"bf_julia\")")
+    println("   in Julia: include(\"bf_jl.lua\")")
+    println("   in Lua: Brainfuck = require(\"bf_jl\")")
 else
-    Brainfuck.runfile(last(ARGS))
+    foreach(Brainfuck.runfile, ARGS)
 end
 
 _=#_G--[[

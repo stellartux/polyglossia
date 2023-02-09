@@ -2,7 +2,7 @@
 #include <stdio.h>
 #endif /* Code only visible to Julia
 
-hello() = println("Hello from Julia!")
+hello() = println("Hello from \x1b[35mJulia\x1b[m!")
 puts = println
 start = nothing
 
@@ -11,14 +11,14 @@ start = nothing
 #define start {
 #define end }
 
-void hello() { puts("Hello from C!"); }
+void hello() { puts("Hello from \x1b[90mC\x1b[m!"); }
 
 // Code visible to C and Julia =#
 
 function main()
 start
     hello();
-    puts("Hello from C and Julia!");
+    puts("Hello from \x1b[90mC\x1b[m and \x1b[35mJulia\x1b[m!");
 end
 
 #if 0

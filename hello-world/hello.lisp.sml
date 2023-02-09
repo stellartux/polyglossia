@@ -1,5 +1,5 @@
 ;(* Code visible only to Common Lisp
-(defun println (x) (print x))
+(defun println (x) (princ x) (princ #\Newline))
 (println "Hello from Common Lisp!")
 
 #|| Code visible only to Standard ML *)
