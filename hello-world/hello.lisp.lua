@@ -6,8 +6,8 @@
 
 #|| Code visible to Lua ]]
 
-function void(...) end
-function println(...) print(...) return void end
+local function void(...) end
+local function println(...) print(...) return void end
 println("Hello from Lua!")
 
 -- Code visible to Common Lisp and Lua ||#
