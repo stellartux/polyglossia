@@ -145,7 +145,7 @@ function (filename) Brainfuck.run(readchomp(filename)) end
 
 if pcall(debug.getlocal, 4, 1) then
     return Brainfuck
-elseif get(ARGS, 1, "--hepl") == "--help" then
+elseif get(ARGS, 1, "--help") == "--help" then
     println("Julia/Lua Polyglot Brainfuck Interpreter")
     println("Usage: (julia|lua) bf_jl.lua FILENAMES...")
     println("or load the Brainfuck module")
