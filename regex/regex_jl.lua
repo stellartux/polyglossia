@@ -1,7 +1,7 @@
-_=#_G--[[
-0 # code here is only visible to Julia
-  # see https://programmingpraxis.com/2009/09/11/beautiful-code/
+#!/usr/bin/env lua
+_=#_G--[[ code here is only visible to Julia
 
+"See https://programmingpraxis.com/2009/09/11/beautiful-code/"
 module SimpleRegex
 
 then = true
@@ -34,6 +34,7 @@ Search for `re` anywhere in `text`. Syntax of `re`:
 - `\$` matches the end of the text
 - `.` matches any character
 - `*` modifies the previous match to match 0 or more times
+- `+` modifies the previous match to match 1 or more times
 - all other characters match literally
 """
 match(::Nothing, _) = true
@@ -57,6 +58,11 @@ local function ifelse(p, c, a) return p and c or a end
 local function isempty(xs) return #xs == 0 end
 local function get(t, k, d) return t and k and t[k] or d end
 local function length(xs) return #xs end
+
+local function occursin(needle, haystack)
+    return not not haystack:find(needle, 1, true)
+end
+
 local println = print
 local function raw(...) return ... end
 local function rest(s, i) return s:sub(utf8.offset(s, 1 + (i or 1))) end
@@ -94,7 +100,10 @@ function SimpleRegex.matchhere(re, text)
         return isempty(text)
     elseif isempty(text) then
         return false
-    elseif get(re, 2, nil) == '*' then
+    elseif occursin(get(re, 2, '~'), "*+") then
+        if (re[2] == '+')and(not(c == text[1])) then
+            return false
+        end
         return SimpleRegex.matchstar(c, rest(re, 2), text)
     elseif (c == text[1])or(c == '.') then
         return SimpleRegex.matchhere(rest(re), rest(text))
