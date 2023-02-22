@@ -216,8 +216,9 @@ function rawset(t::Table, ::Nothing, key)::Nothing
     nothing
 end
 
-function select(index::AbstractString, xs::Vararg)
-    assert(index == "#", "bad argument #1 to 'select' (number expected, got string)")
+function select(index::Union{AbstractChar,AbstractString}, xs::Vararg)
+    assert(string(index) == "#",
+        "bad argument #1 to 'select' (number expected, got string)")
     length(xs)
 end
 select(index::Integer, xs::Vararg) = xs[index]
@@ -228,7 +229,7 @@ tonumber(_, _=nothing) = nothing
 
 tostring = string
 
-type(::AbstractString) = "string"
+type(::Union{AbstractChar,AbstractString}) = "string"
 type(::Bool) = "boolean"
 type(::Function) = "function"
 type(::Nothing) = "nil"
@@ -295,21 +296,21 @@ module os
 using Dates
 
 date() = Dates.format(dateformat"e u d HH:MM:SS Y", now())
-function date(format, time = startswith(format, '!') ? now(Dates.UTC) : now())
+function date(format, time=startswith(format, '!') ? now(Dates.UTC) : now())
     if startswith(format, '!')
         format = SubString(format, 2)
     end
     if format == "*t"
         (
-            year = Dates.year(time),
-            month = Dates.month(time),
-            day = Dates.day(time),
-            hour = Dates.hour(time),
-            min = Dates.minute(time),
-            sec = Dates.second(time),
-            wday = mod1(Dates.dayofweek(time) + 1, 7),
-            yday = Dates.dayofyear(time),
-            isdst = nothing
+            year=Dates.year(time),
+            month=Dates.month(time),
+            day=Dates.day(time),
+            hour=Dates.hour(time),
+            min=Dates.minute(time),
+            sec=Dates.second(time),
+            wday=mod1(Dates.dayofweek(time) + 1, 7),
+            yday=Dates.dayofyear(time),
+            isdst=nothing
         )
     else
         Dates.format(time, format)
@@ -332,7 +333,7 @@ exit(code::Integer, _::Bool=false) = Base.exit(code)
 
 getenv(varname::AbstractString) = get(ENV, varname, nothing)
 
-function remove(filename)
+function remove(filename::AbstractString)
     try
         rm(filename)
     catch err
@@ -340,7 +341,7 @@ function remove(filename)
     end
 end
 
-function rename(oldname, newname)
+function rename(oldname::AbstractString, newname::AbstractString)
     try
         mv(oldname, newname)
         true
@@ -367,20 +368,78 @@ char(bytes::Vararg{Integer}) = join(Char(c) for byte in bytes)
 function find(s::AbstractString, pattern::AbstractString, init::Integer=1, plain::Bool=false)
     if plain
         m = findnext(pattern, s, init)
-        return m ? first(m), last(m) : nothing
+        return m ? (first(m), last(m)) : nothing
     end
-    m = Base.match(Regex(pattern), s, init)
-    if m
+    find(s, LuaPattern(pattern), init)
+end
+
+function find(s::AbstractString, pattern::AbstractPattern, init::Integer=1)
+    m = Base.match(pattern, s, init)
+    if !isnothing(m)
         tuple(m.offset, m.offset + length(m.match) - 1, m.captures...)
     end
 end
 
 format(s::AbstractString, xs...) = Printf.format(Printf.Format(s), xs...)
 
+mutable struct Gmatch{S<:AbstractString,P<:AbstractPattern} <: Function
+    s::S
+    pattern::P
+    i::Int
+end
+
+function (g::Gmatch)()
+    x = iterate(g)
+    if !isnothing(x)
+        last(x)
+    end
+end
+
+function Base.iterate(g, _=nothing)
+    m = Base.match(g.pattern, g.s, g.i)
+    if isnothing(m)
+        g.i = lastindex(g.s) + 1
+        nothing
+    else
+        g.i = nextind(g.s, m.offset + length(m.match) - 1)
+        r = if isempty(m.captures)
+            m.match
+        elseif isone(length(m.captures))
+            only(m.captures)
+        else
+            Tuple(m.captures)
+        end
+        r, r
+    end
+end
+
+Base.eltype(::Gmatch) = Union{AbstractString,Tuple{Vararg{AbstractString}}}
+Base.isdone(g::Gmatch) = g.i > lastindex(g.s)
+Base.IteratorSize(::Gmatch) = Base.SizeUnknown()
+
+gmatch(s::AbstractString, pattern::AbstractPattern, init=1) =
+    Gmatch(s, pattern, init)
+
 
 len = ncodeunits
 
 lower = lowercase
+
+match(s::AbstractString, pattern::AbstractString, init::Integer=1) =
+    match(s, LuaPattern(pattern), init)
+
+function match(s::AbstractString, pattern::AbstractPattern, init::Integer=1)
+    m = Base.match(pattern, s, init)
+    if !isnothing(m)
+        if isempty(m.captures)
+            m.match
+        elseif isone(length(m.captures))
+            only(m.captures)
+        else
+            Tuple(m.captures)
+        end
+    end
+end
 
 rep(s::AbstractString, n::Integer) = repeat(s, n)
 rep(s::AbstractString, n::Integer, sep) = join(Iterators.repeated(s, n), sep)
@@ -388,7 +447,6 @@ rep(s::AbstractString, n::Integer, sep) = join(Iterators.repeated(s, n), sep)
 export reverse
 
 sub(s::AbstractString, i::Integer, j::Integer=lastindex(s)) = view(s, i:j)
-
 
 upper = uppercase
 
@@ -452,7 +510,7 @@ function len(s::AbstractString, i::Integer=1, j::Integer=1, _=false)
     end
 end
 
-function offset(s, n, i = n >= 0 ? 1 : ncodeunits(s) + 1) 
+function offset(s, n, i=n >= 0 ? 1 : ncodeunits(s) + 1)
     if iszero(n)
         return checkbounds(Bool, s, i) ? thisind(s, i) : nothing
     end
