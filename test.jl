@@ -41,12 +41,18 @@ function tocmd(file)
     cmds
 end
 
+function testfile(file, rootname=".")
+    println("\n", file)
+    run.(tocmd("$(rootname)/$(file)"))
+end
+
 for path in paths
-    for (rootname, _, files) in walkdir(path)
-        printstyled("\n\nTesting $(rootname)\n"; bold=true)
-        for file in files
-            println("\n", file)
-            run.(tocmd("$(rootname)/$(file)"))
+    if isdir(path)
+        for (rootname, _, files) in walkdir(path)
+            printstyled("\n\nTesting $(rootname)\n"; bold=true)
+            testfile.(files, rootname)
         end
+    else
+        testfile(path)
     end
 end
