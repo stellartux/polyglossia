@@ -1,9 +1,9 @@
---[[ Code only visible to Haskell
+--[[ Code visible to Haskell
 
 main = do
     putStrLn "Hello from \27[95mHaskell\27[m!"
 
-{- Code only visible to Lua ]]
+{- Code visible to Lua ]]
 local putStrLn = print
 putStrLn "Hello from \27[94mLua\27[m!"
 

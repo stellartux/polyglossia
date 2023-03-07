@@ -18,6 +18,8 @@ function tocmd(file)
             push!(cmds, `gawk -f $(file) $(inputfile)`)
         elseif lang == "c"
             push!(cmds, `cc -o tmp/$(name) $(file)`, `tmp/$(name) $(inputfile)`)
+        elseif lang == "hs"
+            push!(cmds, `runghc $(file)`)
         elseif lang == "jl"
             push!(cmds, `julia $(file)  $(inputfile)`)
         elseif lang == "js"
