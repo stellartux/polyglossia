@@ -7,25 +7,18 @@ features to allow for easier polyglot programming in Lua and Julia.
 """
 module Lua
 
-"Make a closure postfix."
-struct Postfix{F<:Function} <: Function
-    f::F
-end
-(p::Postfix)(args...; kwargs...) = p.f(args...; kwargs...)
-Base.:*(::Tuple{}, p::Postfix) = p.f()
-Base.:*(x, p::Postfix) = p.f(x)
-Base.:*(x::Tuple, p::Postfix) = p.f(x...)
-
 then(b::Bool) = b
 then(::Nothing) = false
 then(_) = true
 Base.:*(x, ::typeof(then)) = then(x)
+Base.:*(x::Tuple{}, ::typeof(then)) = false
 Base.:*(x::Tuple, ::typeof(then)) = then(first(x))
 
 not(b::Bool) = !b
 not(::Nothing) = true
 not(::Tuple{}) = false
 not(::Tuple) = not(first(tuple))
+not(::Any) = false
 
 """
 
@@ -33,7 +26,12 @@ not(::Tuple) = not(first(tuple))
 
 Julia `and` does not short circuit, both sides are evaluated before the `and`.
 """
-and(b) = Postfix((a) -> a * then ? b : a)
+and(a, b) = then(a) ? b : a
+and(::Tuple{}, _) = nothing
+and(a::Tuple, b) = and(first(a), b)
+and(b) = Base.Fix2(and, b)
+and(::Tuple{}) = and(nothing)
+and(t::Tuple) = and(first(t))
 
 """
 
@@ -41,7 +39,17 @@ and(b) = Postfix((a) -> a * then ? b : a)
 
 Julia `or` does not short circuit, both sides are evaluated before the `or`.
 """
-or(b) = Postfix((a) -> a * then ? a : b)
+or(a, b) = then(a) ? a : b
+or(b) = Base.Fix2(or, b)
+or(::Tuple{}, b) = b
+or(a::Tuple, b) = or(first(a), b)
+or(b) = Base.Fix2(or, b)
+or(::Tuple{}) = or(nothing)
+or(t::Tuple) = or(first(t))
+
+Base.:*(b, f::Base.Fix2{Union{typeof(and),typeof(or)},<:Any}) = f(b)
+Base.:*(::Tuple{}, f::Base.Fix2{Union{typeof(and),typeof(or)},<:Any}) = f(nothing)
+Base.:*(b::Tuple, f::Base.Fix2{Union{typeof(and),typeof(or)},<:Any}) = f(first(b))
 
 arg = ARGS
 nil = nothing
@@ -151,6 +159,21 @@ setmetatable(t::Table, mt) = setfield!(t, :mt, mt)
 
 ipairs(t::Table) = pairs(getfield(t, :vec))
 ipairs(xs) = enumerate(xs)
+
+function next(t::Table, index::Integer)
+    vec = getfield(t, :vec)
+    dict = getfield(t, :dict)
+    if index in keys(vec)
+        reverse(iterate(vec, index))
+    else
+        iterate(dict)
+    end
+end
+
+# some sort of weakdict mapping table and keys to iteration states?
+
+next(t::Table, key) = iterate(t, key)
+
 Base.pairs(t::Table) = Iterators.flatten((ipairs(t), pairs(getfield(t, :dict))))
 
 function pcall(f, xs...)
@@ -253,6 +276,182 @@ end
 
 "This function is similar to pcall, except that it sets a new message handler msgh."
 xpcall = pcall
+
+# module coroutine
+
+# Coroutine = Channel
+
+# function create(f::Function) end
+
+# function isyieldable(co::Coroutine) end
+# function isyieldable() end
+# function close(co::Coroutine) end
+
+# function resume(co::Coroutine, vals...) end
+
+# function running() end
+
+# function status(co::Coroutine) end
+
+# function wrap(f) end
+
+# function yield(...) end
+
+# end # coroutine
+
+module io
+export stdin, stdout, stderr
+
+begin
+    local defaultin = stdin
+    local defaultout = stdout
+
+    function close(file=defaultout)
+        if file != stdout
+            Base.close(file)
+            true
+        end
+        false
+    end
+
+    flush(file=defaultout) = Base.flush(file)
+
+    input(file) = defaultin = file
+    input(path::AbstractString) = input(Base.open(path))
+    input() = defaultin
+
+    lines(file=defaultin) = eachline(file)
+    lines(file, mode::AbstractString) = lines(file, only(mode))
+    function lines(file, mode::AbstractChar)
+        # todo: return Lua-style iterator function over Julia iterator
+        if mode == 'a'
+            Base.read(file, String)
+        elseif mode == 'n'
+            @warn "unimplemented lines(..., 'n')"
+            # todo: parse whole file as numbers
+        elseif mode == 'l' || mode == 'L'
+            eachline(file, keep=mode == 'L')
+        else
+
+        end
+    end
+
+    output() = defaultout
+    output(file) = (io.defaultout = file)
+    output(filename::AbstractString) = output(open(filename, "w"))
+
+    read(fmt...) = Base.read(defaultin, fmt...)
+    read(io::IO, fmt...) = Base.read(io, fmt...)
+
+    function write(file::IO, xs...)
+        try
+            Base.print(file, xs...)
+            file
+        catch err
+            nothing, err.msg
+        end
+    end
+    write(xs...) = write(defaultout, xs...)
+
+end # defaultfile scope
+
+open(prog::AbstractString, mode::AbstractChar) = open(prog, string(mode))
+function open(filename::AbstractString, mode::AbstractString="r")
+    try
+        Base.open(filename, replace(mode, 'a'=>'w', 'b'=>""))
+    catch err
+        nothing, err.msg
+    end
+end
+
+popen(prog::AbstractString, mode::AbstractString) = popen(prog, first(mode))
+function popen(prog::AbstractString, mode::AbstractChar='r')
+    try
+        buf = IOBuffer()
+        if mode == 'r'
+            run(pipeline(Cmd([prog]), buf))
+            seekstart(buf)
+            buf
+        elseif mode == 'w'
+            # todo: a wrapper with a file-like interface which buffers writes
+            # then executes the command on read/finalize
+            error("Unimplemented")
+        else
+            ArgumentError("bad argument #2 to 'popen' (invalid mode)")
+        end
+    catch err
+        nothing, err.msg
+    end
+end
+
+# return file* (possibly wrap this type)
+tmpfile() = Base.open(tempname(), "w+")
+
+type(file::IO) = isopen(file) ? "file" : "closed file"
+type(_) = nothing
+
+struct filep <: IO
+    mode
+end
+
+#@alias readmode integer|string
+#| "n"  # ##DESTAIL 'readmode.n'
+#| "a"  # ##DESTAIL 'readmode.a'
+#|>"l"  # ##DESTAIL 'readmode.l'
+#| "L"  # ##DESTAIL 'readmode.L'
+
+#@alias exitcode "exit"|"signal"
+
+##DES 'file:close'
+#@return boolean?  suc
+#@return exitcode? exitcode
+#@return integer?  code
+# function file:close() end
+
+##DES 'file:flush'
+# function file:flush() end
+
+##DES 'file:lines'
+#@param ... readmode
+#@return fun():any, ...
+# function file:lines(...) end
+
+##DES 'file:read'
+#@param ... readmode
+#@return any
+#@return any ...
+#@nodiscard
+# function file:read(...) end
+
+#@alias seekwhence
+#| "set" # ##DESTAIL 'seekwhence.set'
+#|>"cur" # ##DESTAIL 'seekwhence.cur'
+#| "end" # ##DESTAIL 'seekwhence.end'
+
+##DES 'file:seek'
+#@param whence? seekwhence
+#@param offset? integer
+#@return integer offset
+#@return string? errmsg
+# function file:seek(whence, offset) end
+
+#@alias vbuf
+#| "no"   # ##DESTAIL 'vbuf.no'
+#| "full" # ##DESTAIL 'vbuf.full'
+#| "line" # ##DESTAIL 'vbuf.line'
+
+##DES 'file:setvbuf'
+#@param mode vbuf
+#@param size? integer
+# function file:setvbuf(mode, size) end
+
+##DES 'file:write'
+#@param ... string|number
+#@return file*?
+#@return string? errmsg
+# function file:write(...) end
+
+end # io
 
 module math
 using Random: seed!
@@ -420,6 +619,40 @@ Base.IteratorSize(::Gmatch) = Base.SizeUnknown()
 gmatch(s::AbstractString, pattern::AbstractPattern, init=1) =
     Gmatch(s, pattern, init)
 
+##DES 'gsub'
+#@param s       string
+#@param pattern string
+#@param repl    string|number|table|function
+#@param n?      integer
+#@return string
+#@return integer count
+#@nodiscard
+function gsub(s::AbstractString, pattern::AbstractPattern, repl::Function, n::Integer=-1)
+    inds = findall(pattern, s)
+    if isempty(inds)
+        return s, 0
+    end
+    ending = SubString(s, nextind(s, last(last(inds))))
+    result = [SubString(s, firstindex(s), first(first(inds)) - 1)]
+    replacements = 0
+    while n != replacements && !isempty(inds)
+        push!(result, repl(view(s, popfirst!(inds))))
+        replacements += 1
+    end
+    if !isempty(inds)
+        ending = SubString(s, nextind(s, last(first(inds))))
+    end
+    push!(result, ending)
+    join(result), replacements
+end
+gsub(s, pattern, repl::Number, xs...) =
+    gsub(s, pattern, Returns(string(repl)), xs...)
+gsub(s, pattern, repl::AbstractString, xs...) =
+    gsub(s, pattern, Returns(repl), xs...)
+gsub(s, pattern, repl::Table, xs...) =
+    gsub(s, pattern, (key) -> string(get(repl, key, "")), xs...)
+gsub(s::AbstractString, pattern::AbstractString, repl::Function, xs...) =
+    gsub(s, LuaPattern(pattern), repl, xs...)
 
 len = ncodeunits
 
@@ -457,6 +690,7 @@ module table
 concat(list, sep::AbstractString="") = join(list, sep)
 concat(list, sep::AbstractString, i::Integer, j::Integer=lastindex(list)) =
     join(view(list, i:j), sep)
+concat(t::Table, xs...) = concat(getfield(t, :vec), xs...)
 
 insert(list, pos::Integer, ::Nothing) = push!(list, pos)
 insert(list, value, _::Nothing=nothing) = push!(list, value)

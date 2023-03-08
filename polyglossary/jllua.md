@@ -81,4 +81,3 @@ println("Hello from Lua!")
 -- This section is visible to Julia and Lua =#
 println("Hello from Julia and Lua!")
 ```
-
