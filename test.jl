@@ -45,16 +45,22 @@ end
 
 function testfile(file, rootname=".")
     println("\n", file)
-    run.(tocmd("$(rootname)/$(file)"))
+    Threads.@threads for cmd in tocmd("$(rootname)/$(file)")
+        run(cmd)
+    end
 end
 
 for path in paths
     if isdir(path)
         for (rootname, _, files) in walkdir(path)
             printstyled("\n\nTesting $(rootname)\n"; bold=true)
-            testfile.(files, rootname)
+            for file in files
+                if !endswith(".md")
+                    testfile(file, rootname)
+                end
+            end
         end
-    else
+    elseif isfile(path)
         testfile(path)
     end
 end

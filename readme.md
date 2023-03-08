@@ -20,17 +20,15 @@ A collection of polyglot programs.
 | Shell       | bash 5.1.16(1)-release
 | Standard ML | mlton 20210117
 
-## Programs
+## Testing
 
-Test all implementations of a program with `julia test.jl $PROGRAM_NAME`
+Test all implementations of a program with `julia test.jl $DIRNAME`, or
+test a specific file with `julia test.jl $FILENAME`.
 
-### hello-world
+## Shebangs
 
-A selection of polyglot scripts which say "Hello, World!" in different
-combinations of languages. They show the comment escaping tricks needed to
-combine the languages, and definitions for `print/println/puts`, as a starting
-point for unifying output between the languages.
-
-### brainfuck
-
-A Brainfuck interpreter, to demonstrate memory use and a simple CLI.
+Where possible, each script has a shebang line. In general, if a language is
+capable of supporting a shebang line, the shebang line is ignored by the
+language runtime, so it can be run by any language regardless of the shebang.
+The exception is Ruby, which will not run a script with a shebang line unless
+it is the interpreter in the shebang.
