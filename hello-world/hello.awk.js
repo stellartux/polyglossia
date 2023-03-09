@@ -1,18 +1,29 @@
-#!/usr/bin/env gawk
-
-//{}# code here is executed by awk and by javascript
 function main() {
-    //# use if (null == 0) to put a language specific section inside a function
-    print(null == 0 ? "Hello from \x1b[30mawk\x1b[m!" : "Hello from \x1b[33mJavaScript\x1b[m!")
+    print("Hello from \x1b[30mAwk\x1b[m and \x1b[33mJavaScript\x1b[m!");
 }
 
-/*/ # code here is only executed by awk
+/*/ # code visible to Awk
 # one true awk doesn't accept this as a valid regex, which is why gawk is needed
 
 BEGIN {
+    print "Hello from \x1b[30mAwk\x1b[m!"
     main()
     exit
 }
 
-#*/ globalThis.print ??= console.log /* code here is only executed by js
-#*/ main()
+# code visible to JavaScript
+
+#*/var print;/*
+#*/if (print) {/*
+#*/  print("Hello from \x1b[33mqjs\x1b[m!");/*
+#*/} else if (this == undefined) {/*
+#*/  print = console.log;/*
+#*/  print("Hello from \x1b[33mdeno\x1b[m!");/*
+#*/} else if (!this.display) {/*
+#*/  print = console.log;/*
+#*/  print("Hello from \x1b[33mnode\x1b[m!");/*
+#*/} else {/*
+#*/  this.console = { log: print = function(s) { display(s); newline(); }};/*
+#*/  print("Hello from \x1b[33mguile\x1b[m!");/*
+#*/}/*
+#*/main();

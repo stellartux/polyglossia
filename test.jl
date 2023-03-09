@@ -25,7 +25,11 @@ function tocmd(file)
         elseif lang == "jl"
             push!(cmds, `julia $(file) $(inputfile)`)
         elseif lang == "js"
-            push!(cmds, `node $(file) $(inputfile)`, `deno run $(file) $(inputfile)`, `qjs $(file) $(inputfile)`)
+            push!(cmds,
+                `node $(file) $(inputfile)`,
+                `deno run $(file) $(inputfile)`,
+                `qjs $(file) $(inputfile)`,
+                `guile --no-debug --language ecmascript -s $(file) $(inputfile)`)
         elseif lang == "lisp"
             push!(cmds, `sbcl --script $(file) $(inputfile)`)
         elseif lang == "lua"
@@ -34,6 +38,13 @@ function tocmd(file)
             push!(cmds, `python3 $(file) $(inputfile)`)
         elseif lang == "rb"
             push!(cmds, `ruby $(file) $(inputfile)`)
+        elseif lang == "scm"
+            push!(cmds,
+                if filecontains(file, "(define (main")
+                    `guile --no-debug -e main -s $(file) $(inputfile)`
+                else
+                    `guile --no-debug -s $(file) $(inputfile)`
+                end)
         elseif lang == "sh"
             push!(cmds, `sh --posix $(file)`)
         else

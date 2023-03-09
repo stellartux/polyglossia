@@ -1,4 +1,9 @@
 {
   "C_Cpp.errorSquiggles": "disabled",
   "editor.unusualLineTerminators": "off",
+  "shellcheck.exclude": [
+    "1083",
+    "2059",
+    "2283",
+  ]
 }

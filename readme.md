@@ -12,12 +12,13 @@ A collection of polyglot programs.
 | C           | gcc 12.2.1
 | Common Lisp | sbcl 2.3.0
 | Haskell     | ghc 9.0.2
-| JavaScript  | node v19.5.0, deno 1.30.0, qjs 2021-03-27
+| JavaScript  | node v19.5.0, deno 1.30.0, qjs 2021-03-27, GNU Guile 3.0.9
 | Julia       | julia 1.8.5
 | Lua         | lua 5.4.4
 | Python      | python 3.10.9
 | Ruby        | ruby 3.0.5p211
-| Shell       | bash 5.1.16(1)-release
+| Scheme      | GNU Guile 3.0.9
+| Shell       | bash 5.1.16(1)-release (POSIX mode)
 | Standard ML | mlton 20210117
 
 ## Testing
