@@ -1,7 +1,7 @@
 ;--[[
 ;{- Code visible to Common Lisp
 
-(defun putStrLn (x) (princ x) (princ #\Newline) ())
+(defun putStrLn (x) (princ x) (terpri))
 (putStrLn "Hello from Common Lisp!")
 
 #| Code visible to Lua ]]

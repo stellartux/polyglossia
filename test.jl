@@ -4,6 +4,8 @@ paths = isempty(ARGS) ? ("hello-world", "brainfuck") : ARGS
 
 eachlang(path::AbstractString) = split(basename(path), r"[_.]")
 
+filecontains(filepath, needle) = contains(read(filepath, String), needle)
+
 inputfiles = Dict(
     "hello-world" => "",
     "brainfuck" => "brainfuck/hello.bf"
@@ -16,12 +18,12 @@ function tocmd(file)
     for lang in langs
         if lang == "awk"
             push!(cmds, `gawk -f $(file) $(inputfile)`)
-        elseif lang == "c"
-            push!(cmds, `cc -o tmp/$(name) $(file)`, `tmp/$(name) $(inputfile)`)
+        elseif lang == "c" || lang == "sml" || (lang == "lisp" && filecontains(file, "defun main"))
+            push!(cmds, `make -s o/$(file).$(lang)_compiled`, `o/$(file).$(lang)_compiled $(inputfile)`)
         elseif lang == "hs"
             push!(cmds, `runghc $(file)`)
         elseif lang == "jl"
-            push!(cmds, `julia $(file)  $(inputfile)`)
+            push!(cmds, `julia $(file) $(inputfile)`)
         elseif lang == "js"
             push!(cmds, `node $(file) $(inputfile)`, `deno run $(file) $(inputfile)`, `qjs $(file) $(inputfile)`)
         elseif lang == "lisp"
@@ -33,11 +35,9 @@ function tocmd(file)
         elseif lang == "rb"
             push!(cmds, `ruby $(file) $(inputfile)`)
         elseif lang == "sh"
-            push!(cmds, `sh $(file)`)
-        elseif lang == "sml"
-            push!(cmds, `mlton -output tmp/$(name) $(file)`, `tmp/$(name) $(inputfile)`)
+            push!(cmds, `sh --posix $(file)`)
         else
-            push!(cmds, `true`)
+            println("Don't know what to do with $(lang)")
         end
     end
     cmds
@@ -55,12 +55,14 @@ for path in paths
         for (rootname, _, files) in walkdir(path)
             printstyled("\n\nTesting $(rootname)\n"; bold=true)
             for file in files
-                if !endswith(".md")
+                if !endswith(file, ".md")
                     testfile(file, rootname)
                 end
             end
         end
     elseif isfile(path)
         testfile(path)
+    else
+        error("Invalid path: $path")
     end
 end
