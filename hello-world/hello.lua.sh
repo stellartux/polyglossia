@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 _= #{} --[[ code visible to Shell
 
 print() {

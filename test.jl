@@ -1,10 +1,16 @@
 #!/usr/bin/env julia
 
-paths = isempty(ARGS) ? ("hello-world", "brainfuck") : ARGS
+module PolyglossiaTests
 
 eachlang(path::AbstractString) = split(basename(path), r"[_.]")
 
-filecontains(filepath, needle) = contains(read(filepath, String), needle)
+filecontains(filepath, needle::AbstractString) =
+    contains(read(filepath, String), needle)
+
+function filecontains(filepath, needles...)
+    file = read(filepath, String)
+    tuple((contains(file, needle) for needle in needles)...)
+end
 
 inputfiles = Dict(
     "hello-world" => "",
@@ -14,7 +20,7 @@ inputfiles = Dict(
 function tocmd(file)
     name, langs... = eachlang(file)
     inputfile = inputfiles[basename(dirname(file))]
-    cmds = Cmd[]
+    cmds = []
     for lang in langs
         if lang == "awk"
             push!(cmds, `gawk -f $(file) $(inputfile)`)
@@ -25,11 +31,19 @@ function tocmd(file)
         elseif lang == "jl"
             push!(cmds, `julia $(file) $(inputfile)`)
         elseif lang == "js"
-            push!(cmds,
-                `node $(file) $(inputfile)`,
-                `deno run $(file) $(inputfile)`,
-                `qjs $(file) $(inputfile)`,
-                `guile --no-debug --language ecmascript -s $(file) $(inputfile)`)
+            deno, node, qjs, guile = filecontains(file, "deno", "node", "qjs", "guile")
+            if deno
+                push!(cmds, `deno run $(file) $(inputfile)`)
+            end
+            if node
+                push!(cmds, `node $(file) $(inputfile)`)
+            end
+            if qjs
+                push!(cmds, `qjs $(file) $(inputfile)`)
+            end
+            if guile
+                push!(cmds, `guile --no-debug --language ecmascript -s $(file) $(inputfile)`)
+            end
         elseif lang == "lisp"
             push!(cmds, `sbcl --script $(file) $(inputfile)`)
         elseif lang == "lua"
@@ -41,9 +55,9 @@ function tocmd(file)
         elseif lang == "scm"
             push!(cmds,
                 if filecontains(file, "(define (main")
-                    `guile --no-debug -e main -s $(file) $(inputfile)`
+                    `guile --no-auto-compile --no-debug -e main -s $(file) $(inputfile)`
                 else
-                    `guile --no-debug -s $(file) $(inputfile)`
+                    `guile --no-auto-compile --no-debug -s $(file) $(inputfile)`
                 end)
         elseif lang == "sh"
             push!(cmds, `sh --posix $(file)`)
@@ -55,13 +69,13 @@ function tocmd(file)
 end
 
 function testfile(file, rootname=".")
-    println("\n", file)
+    printstyled("\n[", file, "]\n"; color=:black)
     Threads.@threads for cmd in tocmd("$(rootname)/$(file)")
         run(cmd)
     end
 end
 
-for path in paths
+function runtest(path::AbstractString)
     if isdir(path)
         for (rootname, _, files) in walkdir(path)
             printstyled("\n\nTesting $(rootname)\n"; bold=true)
@@ -77,3 +91,20 @@ for path in paths
         error("Invalid path: $path")
     end
 end
+
+"""
+
+    runtest(paths...)
+
+Execute each polyglot language file in each of the given paths in each language.
+"""
+runtest(paths) = foreach(runtest, paths)
+runtest(paths...) = foreach(runtest, paths)
+runtest() = runtest("hello-world", "brainfuck")
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    runtest(ARGS...)
+end
+export runtest
+
+end#module
