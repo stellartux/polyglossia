@@ -10,6 +10,7 @@ A collection of polyglot programs.
 | -           | -
 | Awk         | gawk 5.2.1
 | C           | gcc 12.2.1
+| Clojure     | Clojure 1.11.1
 | Common Lisp | sbcl 2.3.0
 | Haskell     | ghc 9.0.2
 | JavaScript  | node v19.5.0, deno 1.30.0, qjs 2021-03-27, GNU Guile 3.0.9

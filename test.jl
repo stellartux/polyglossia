@@ -26,6 +26,8 @@ function tocmd(file)
             push!(cmds, `gawk -f $(file) $(inputfile)`)
         elseif lang == "c" || lang == "sml" || (lang == "lisp" && filecontains(file, "defun main"))
             push!(cmds, `make -s o/$(file).$(lang)_compiled`, `o/$(file).$(lang)_compiled $(inputfile)`)
+        elseif lang == "clj"
+            push!(cmds, `clojure -M $(file)`)
         elseif lang == "hs"
             push!(cmds, `runghc $(file)`)
         elseif lang == "jl"

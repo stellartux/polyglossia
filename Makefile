@@ -12,4 +12,4 @@ o/%.c_compiled: %
 
 o/%.lisp_compiled: %
 	mkdir -p $(dir $@)
-	sbcl --non-interactive --load "$<" --eval "(save-lisp-and-die \"$@\" :toplevel #'main :executable T)" >> /dev/null
+	sbcl --script --load "$<" --eval "(save-lisp-and-die \"$@\" :toplevel #'main :executable T)" >> /dev/null
