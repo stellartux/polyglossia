@@ -5,5 +5,9 @@
     "1083",
     "2059",
     "2283",
+  ],
+  "files.insertFinalNewline": true,
+  "Lua.diagnostics.disable": [
+    "discard-returns"
   ]
 }
