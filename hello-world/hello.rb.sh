@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# shellcheck shell=sh
 
 true and '\'' # code visible to Ruby
 

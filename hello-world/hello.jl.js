@@ -1,5 +1,4 @@
-1//1#= code visible to JavaScript
-  ;
+//#= code visible to JavaScript
 
 var println;
 if (this == undefined) {
