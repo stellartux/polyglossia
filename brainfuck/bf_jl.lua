@@ -149,8 +149,8 @@ elseif get(ARGS, 1, "--help") == "--help" then
     println("Julia/Lua Polyglot Brainfuck Interpreter")
     println("Usage: (julia|lua) bf_jl.lua FILENAMES...")
     println("or load the Brainfuck module")
-    println("   in Julia: include(\"bf_jl.lua\")")
-    println("   in Lua: Brainfuck = require(\"bf_jl\")")
+    println("\tin Julia: include(\"bf_jl.lua\")")
+    println("\tin Lua: Brainfuck = require(\"bf_jl\")")
 else
     foreach(Brainfuck.runfile, ARGS)
 end
