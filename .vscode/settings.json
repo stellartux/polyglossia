@@ -8,6 +8,10 @@
   ],
   "files.insertFinalNewline": true,
   "Lua.diagnostics.disable": [
-    "discard-returns"
-  ]
+    "discard-returns",
+    "lowercase-global"
+  ],
+  "markdownlint.config": {
+    "no-space-in-code": false
+  }
 }

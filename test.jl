@@ -13,18 +13,17 @@ function filecontains(filepath, needles...)
 end
 
 inputfiles = Dict(
-    "hello-world" => "",
     "brainfuck" => "brainfuck/hello.bf"
 )
 
 function tocmd(file)
     name, langs... = eachlang(file)
-    inputfile = inputfiles[basename(dirname(file))]
+    inputfile = get(inputfiles, basename(dirname(file)), "")
     cmds = []
     for lang in langs
         if lang == "awk"
             push!(cmds, `gawk -f $(file) $(inputfile)`)
-        elseif lang == "c" || lang == "sml" || (lang == "lisp" && filecontains(file, "defun main"))
+        elseif lang == "c" || lang == "d" || lang == "sml" || (lang == "lisp" && filecontains(file, "defun main"))
             push!(cmds, `make -s o/$(file).$(lang)_compiled`, `o/$(file).$(lang)_compiled $(inputfile)`)
         elseif lang == "clj"
             push!(cmds, `clojure -M $(file)`)

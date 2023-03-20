@@ -13,7 +13,9 @@ All the colour code escape sequences in once place.
 | -           | -
 | Awk         | \x1b[30mAwk\x1b[m
 | C           | \x1b[90mC\x1b[m
+| Clojure     | Clojure
 | Common Lisp | Common Lisp
+| D           | \x1b[31mD\x1b[m
 | Haskell     | \x1b[95mHaskell\x1b[m
 | JavaScript  | \x1b[33mJavaScript\x1b[m
 | Julia       | \x1b[35mJulia\x1b[m
