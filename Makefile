@@ -12,8 +12,12 @@ o/%.c_compiled: %
 
 o/%.lisp_compiled: %
 	mkdir -p $(dir $@)
-	sbcl --script --load "$<" --eval "(save-lisp-and-die \"$@\" :toplevel #'main :executable T)" >> /dev/null
+	sbcl --load "$<" --eval "(save-lisp-and-die \"$@\" :toplevel #'main :executable T)" >> /dev/null
 
 o/%.d_compiled: %
 	mkdir -p $(dir $@)
 	gdc $< -o $@
+
+o/%.nim_compiled: %
+	mkdir -p $(dir $@)
+	nim compile "--out:$@" --hints:off $<

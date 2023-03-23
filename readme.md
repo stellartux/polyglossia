@@ -17,6 +17,7 @@ A collection of polyglot programs.
 | JavaScript  | node v19.5.0, deno 1.30.0, qjs 2021-03-27, GNU Guile 3.0.9
 | Julia       | julia 1.8.5
 | Lua         | lua 5.4.4
+| Nim         | Nim Compiler Version 1.6.10
 | Python      | python 3.10.9
 | Ruby        | ruby 3.0.5p211
 | Scheme      | GNU Guile 3.0.9

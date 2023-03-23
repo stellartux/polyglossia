@@ -23,7 +23,7 @@ function tocmd(file)
     for lang in langs
         if lang == "awk"
             push!(cmds, `gawk -f $(file) $(inputfile)`)
-        elseif lang == "c" || lang == "d" || lang == "sml" || (lang == "lisp" && filecontains(file, "defun main"))
+        elseif lang == "c" || lang == "d" || lang == "nim" || lang == "sml" || (lang == "lisp" && filecontains(file, "defun main"))
             push!(cmds, `make -s o/$(file).$(lang)_compiled`, `o/$(file).$(lang)_compiled $(inputfile)`)
         elseif lang == "clj"
             push!(cmds, `clojure -M $(file)`)
@@ -49,6 +49,8 @@ function tocmd(file)
             push!(cmds, `sbcl --script $(file) $(inputfile)`)
         elseif lang == "lua"
             push!(cmds, `lua $(file) $(inputfile)`)
+        elseif lang == "nims"
+            push!(cmds, `nim run $(file) $(inputfile)`)
         elseif lang == "py"
             push!(cmds, `python3 $(file) $(inputfile)`)
         elseif lang == "rb"

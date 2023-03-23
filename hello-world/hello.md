@@ -20,6 +20,7 @@ All the colour code escape sequences in once place.
 | JavaScript  | \x1b[33mJavaScript\x1b[m
 | Julia       | \x1b[35mJulia\x1b[m
 | Lua         | \x1b[94mLua\x1b[m
+| Nim         | \x1b[93mNim\x1b[m
 | Python      | \x1b[96mPython\x1b[m
 | Ruby        | \x1b[91mRuby\x1b[m
 | Scheme      | \x1b[31mScheme\x1b[m
