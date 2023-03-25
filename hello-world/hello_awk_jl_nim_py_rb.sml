@@ -37,9 +37,9 @@ echo("Hello from \x1b[91mRuby\x1b[m!")
 #]#echo ("Hello from \x1b[93mNim\x1b[m!")#[
 
 }#"
-END{# code visible to Awk, Julia, Ruby and Standard ML =##"""#]## *)
+END{# code visible to Awk, Julia, Nim, Python, Ruby and Standard ML =##"""#]##*)
 
-echo("Hello from Awk, Julia, Ruby and Standard ML!");
+echo("Hello from Awk, Julia, Nim, Python, Ruby and Standard ML!");
 
 #" ";(*
 #=
