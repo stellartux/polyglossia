@@ -13,5 +13,9 @@
   ],
   "markdownlint.config": {
     "no-space-in-code": false
+  },
+  "files.associations": {
+    "*.h": "c",
+    "*.js": "c"
   }
 }

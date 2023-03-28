@@ -115,7 +115,7 @@ local function lev(a, b, c)
 end
 
 _ = #{} --[[
-"Calculates the Levenshtein distance between two sequences."
+0;"Calculates the Levenshtein distance between two sequences."
 function levenshtein(a, b) #= ]]
 --- Calculates the Levenshtein distance between two sequences.
 ---@generic T
@@ -140,9 +140,4 @@ else
 end
 
 _ = #{} --[[
-0
-"Calculates the Levenshtein distance between two sequences."
-levenshtein
-end end #=]]
-
--- =#
+0 end end#]]
