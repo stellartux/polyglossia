@@ -5,6 +5,8 @@ local _ = #{} --[[
 module EditDistance
 export levenshtein
 
+cache(height, width) = Array{Union{Missing,Int}}(missing, height, width)
+
 debug = (
     getlocal=(_...) -> isempty(ARGS) && abspath(PROGRAM_FILE) != @__FILE__,
 )
@@ -19,7 +21,10 @@ pcall(fn, xs...) =
 rest(s::AbstractString) = SubString(s, 2)
 rest(xs) = xs[2:end]
 
+setindex = setindex!
+
 then = true
+begin
 
 #= Code visible only to Lua ]]
 
@@ -32,6 +37,16 @@ local function first(xs)
         return xs[1]
     end
 end
+
+local function getindex(xs, i, ...)
+    if i then
+        return getindex(xs[i], ...)
+    else
+        return xs
+    end
+end
+
+local function ismissing(x) return x == nil end
 
 local function length(x)
     if type(x) == "string" then
@@ -55,34 +70,61 @@ local function rest(xs)
     end
 end
 
+local function setindex(xs, v, j, i, ...)
+    if i then
+        setindex(xs[j], v, i, ...)
+    else
+        xs[j] = v
+    end
+end
+
+local function cache(height, _)
+    local result = {}
+    while height > 0 do
+        table.insert(result, {})
+        height = height - 1
+    end
+    return result
+end
+
 local EditDistance = {}
 
--- Code visible to Julia and Lua 
+-- Code visible to Julia and Lua =#
 
---- Calculates the Levenshtein distance between two sequences.
----@generic T
----@param a T[]
----@param b T[]
----@return integer
----@overload fun(a: string, b: string): integer
-EditDistance.levenshtein = --[[=#
-"Calculates the Levenshtein distance between two sequences."
-levenshtein = #]]
-function (a, b)
+local function lev(a, b, c)
     local lena = length(a)
     local lenb = length(b)
     if lena == 0 then
         return lenb
     elseif lenb == 0 then
         return lena
-    elseif first(a) == first(b) then
-        return EditDistance.levenshtein(rest(a), rest(b))
-    else
-        return 1 + min(
-            EditDistance.levenshtein(rest(a), b),
-            EditDistance.levenshtein(a, rest(b)),
-            EditDistance.levenshtein(rest(a), rest(b)))
+    elseif ismissing(getindex(c, lena, lenb)) then
+        local ld = lev(rest(a), rest(b), c)
+        if first(a) == first(b) then
+            setindex(c, ld, lena, lenb)
+        else
+            setindex(c,
+                1 + min(
+                    ld,
+                    lev(rest(a), b, c),
+                    lev(a, rest(b), c)),
+                lena, lenb)
+        end
     end
+    return getindex(c, lena, lenb)
+end
+
+_ = #{} --[[
+"Calculates the Levenshtein distance between two sequences."
+function levenshtein(a, b) #= ]]
+--- Calculates the Levenshtein distance between two sequences.
+---@generic T
+---@param a T[]
+---@param b T[]
+---@return integer
+---@overload fun(a: string, b: string): integer
+function EditDistance.levenshtein(a, b) --=#
+    return lev(a, b, cache(length(a), length(b)))
 end
 
 if pcall(debug.getlocal, 4, 1) then
@@ -98,4 +140,9 @@ else
 end
 
 _ = #{} --[[
-0 ; end # ]]
+0
+"Calculates the Levenshtein distance between two sequences."
+levenshtein
+end end #=]]
+
+-- =#

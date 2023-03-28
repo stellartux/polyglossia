@@ -13,7 +13,8 @@ function filecontains(filepath, needles...)
 end
 
 inputfiles = Dict(
-    "brainfuck" => "brainfuck/hello.bf"
+    "brainfuck" => "brainfuck/hello.bf",
+    "edit-distance" => ("levenshteins", "runningtime")
 )
 
 function tocmd(file)

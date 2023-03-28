@@ -24,6 +24,11 @@ A collection of polyglot programs.
 | Shell       | bash 5.1.16(1)-release (POSIX mode)
 | Standard ML | mlton 20210117
 
+```sh
+# install these on Arch
+pacman -S clojure sbcl gdc ghc node deno julia lua nim python ruby guile mlton
+```
+
 ## Testing
 
 Test all implementations of a program with `julia test.jl $DIRNAME`, or
