@@ -15,9 +15,36 @@ def eachChar(s, r):
 def indexDict(s):
   return dict((v, i) for (i, v) in enumerate(s))
 
+def isDecimal(s):
+  for c in s:
+    if not ('0' <= c <= '9'):
+      return False
+  return True
+
+def isHexadecimal(s):
+  if s.startswith("0x"):
+    s = s[2:]
+  for c in s:
+    if not ('0' <= c <= '9' or 'a' <= c <= 'f' or 'A' <= c <= 'F'):
+      return False
+  return True
+
+def parseHexInt(x):
+  return int(x, 16)
+
+parseUInt = int
+
 """ code visible to Nim ]#
 
-import std/[algorithm, enumerate, os, re, sequtils, strutils, sugar, tables]
+from std/algorithm import reverse
+from std/enumerate import enumerate
+from std/re import findAll, re, Regex
+from std/sequtils import all, allIt
+from std/strutils import isDigit, HexDigits, parseUInt, parseHexInt, startsWith
+from std/sugar import collect
+from std/tables import `[]`, toTable, Table
+
+func divmod(x, y: SomeInteger): tuple = (x div y, x mod y)
 
 iterator eachChar(s: string, r: Regex): char =
   for m in findAll(s, r):
@@ -29,9 +56,10 @@ proc indexDict(s: string): Table[char, uint] =
       (v, uint(i))
   k.toTable
 
-func divmod(x, y: SomeInteger): tuple = (x div y, x mod y)
+proc isDecimal(s: string): bool = s.all(isdigit)
 
-proc uint2quint*(i: SomeSignedInt): string = uint2quint(uint64(i))
+proc isHexadecimal(s: string): bool =
+  s.startswith("0x") and s[2..^1].allIt(it in HexDigits)
 
 # code visible to Nim and Python """
 
@@ -78,28 +106,18 @@ def uint2quint(n):
   result.reverse() #[
   return "".join(result) #]#
 
-#[]#proc main(s: string): string = #[#
-def main(s):
-  found_uint = True
-  try:
-    n = int(s)
-  except:
-    found_uint = False
-  ''' ]#
-  var n: BiggestUInt
-  let found_uint = s.all(isdigit)
-  # '''
-  if found_uint:
-#[]#    n = parseUInt(s)
-    return uint2quint(n) #[
-  return quint2uint(s) #]#
-#[]#  return $quint2uint(s)
+#[]#proc uint2quint*(i: SomeSignedInt): string = uint2quint(uint64(i))
+
 #[
 if __name__ == "__main__":
-  params = sys.argv[1:]
-  ''' ]#
-when declared(commandLineParams):
-  let params = commandLineParams()
-  # '''
-  if len(params) >= 1:
-    echo(main(params[0]))
+  argv = sys.argv[1:]
+#]#when isMainModule:
+#[]#  import std/os
+#[]#  let argv = commandLineParams()
+  for arg in argv:
+    if isDecimal(arg):
+      echo(uint2quint(parseUInt(arg)))
+    elif isHexadecimal(arg):
+      echo(uint2quint(parseHexInt(arg)))
+    else:
+      echo(quint2uint(arg))
