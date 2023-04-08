@@ -1,27 +1,60 @@
 #!/usr/bin/env python3
 #[ code visible to Python
 
+from re import compile as re, finditer
 import sys
 
 def add(xs, x):
   xs.append(x)
 
 echo = print
-uint2consonant = "bdfghjklmnprstvz"
-uint2vowel = "aiou"
+
+def eachChar(s, r):
+  return (m[0][0] for m in finditer(r, s))
+
+def indexDict(s):
+  return dict((v, i) for (i, v) in enumerate(s))
 
 """ code visible to Nim ]#
 
-import std/[algorithm, os, parseutils, sequtils, strutils]
+import std/[algorithm, enumerate, os, re, sequtils, strutils, sugar, tables]
+
+iterator eachChar(s: string, r: Regex): char =
+  for m in findAll(s, r):
+    yield m[0]
+
+proc indexDict(s: string): Table[char, uint] = 
+  let k = collect(newSeq):
+    for i,v in enumerate(s):
+      (v, uint(i))
+  k.toTable
 
 func divmod(x, y: SomeInteger): tuple = (x div y, x mod y)
-
-const uint2consonant = "bdfghjklmnprstvz"
-const uint2vowel = "aiou"
 
 proc uint2quint*(i: SomeSignedInt): string = uint2quint(uint64(i))
 
 # code visible to Nim and Python """
+
+#[]#const#[
+if True: #]#
+  uint2consonant = "bdfghjklmnprstvz"
+  uint2vowel = "aiou"
+  consonant2uint = indexDict(uint2consonant)
+  vowel2uint = indexDict(uint2vowel)
+
+#[]#func quint2uint*(s: string): SomeUnsignedInt =
+  ##[Map a quint to an integer, skipping non-coding characters.]## #[
+def quint2uint(s):
+  "Map a quint to an integer, skipping non-coding characters."
+  result = 0
+  #]#
+  for c in eachChar(s, re(r"[aioubdfghjklmnprstvz]")):
+    if c in uint2vowel:
+      result = result * 4 + vowel2uint[c]
+    else:
+      result = result * 16 + consonant2uint[c]
+  #[
+  return result #]#
 
 #[]#proc uint2quint*(u: SomeUnsignedInt): string =
   ## Map an integer to one to four quints, using `sepchar` to separate them.
@@ -57,8 +90,10 @@ def main(s):
   let found_uint = s.all(isdigit)
   # '''
   if found_uint:
-#[]#    discard parseBiggestUInt(s, n, 0)
-    return uint2quint(n)
+#[]#    n = parseUInt(s)
+    return uint2quint(n) #[
+  return quint2uint(s) #]#
+#[]#  return $quint2uint(s)
 #[
 if __name__ == "__main__":
   params = sys.argv[1:]

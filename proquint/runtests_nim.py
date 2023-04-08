@@ -28,6 +28,6 @@ for line in lines("testcases.tsv"):
     (s, n) = line.split()
     u = parseUInt(n)
     assert PQ.uint2quint(u) == s
-    # assert PQ.quint2uint(s) == u
+    assert PQ.quint2uint(s) == u
 
 echo(success)
