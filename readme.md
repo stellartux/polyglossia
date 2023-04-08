@@ -25,7 +25,6 @@ A collection of polyglot programs.
 | Standard ML | mlton 20210117
 
 ```sh
-# install these on Arch
 pacman -S clojure sbcl gdc ghc node deno julia lua nim python ruby guile mlton
 ```
 
@@ -33,11 +32,3 @@ pacman -S clojure sbcl gdc ghc node deno julia lua nim python ruby guile mlton
 
 Test all implementations of a program with `julia test.jl $DIRNAME`, or
 test a specific file with `julia test.jl $FILENAME`.
-
-## Shebangs
-
-Where possible, each script has a shebang line. In general, if a language is
-capable of supporting a shebang line, the shebang line is ignored by the
-language runtime, so it can be run by any language regardless of the shebang.
-The exception is Ruby, which will not run a script with a shebang line unless
-it is the interpreter in the shebang.
