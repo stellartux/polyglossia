@@ -11,7 +11,7 @@ module Bool
 export andalso, not, orelse
 
 andalso = &&
-orelse == ||
+orelse = ||
 not = !
 
 function fromString(s::AbstractString)

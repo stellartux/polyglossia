@@ -12,7 +12,7 @@ void sayHello() {
   print("Hello from \x1b[90mC\x1b[m!");
 }
 
-#if 0 // Code visible to JavaScript */
+/*/ // Code visible to JavaScript
 
 var print;
 function sayHello() {
@@ -30,9 +30,7 @@ function sayHello() {
   }
 }
 
-//\
-/*
-#endif // Code visible to C and JavaScript */
+// Code visible to C and JavaScript */
 
 function main() {
   sayHello();
