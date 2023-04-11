@@ -1,3 +1,187 @@
+# Viable Language Combinations
+
+
+## What Makes A Good Combination
+
+### Comment Escaping
+
+Being able to write text which appears to be a comment in one language and code
+in another is the bare minimum for writing non-trivial polyglot code.
+
+The simplest kind of polyglot file is one where several languages coexist
+without any code sharing, like in the following snippet, which can be executed
+as Julia or as a shell script. All the shell code is commented out in Julia, and
+all the Julia code is commented out in shell.
+
+```julia,sh
+#=
+echo "Hello from Shell!"
+: <<=#
+println("Hello from Julia!") #=
+=#
+```
+
+### Function Call Syntax
+
+Shared function call syntax is necessary to be able to do anything in both
+languages at once.
+
+### Conditional Syntax
+
+Having some method of choosing whether to execute a code path or not is
+necessary to write any non-trivial program.
+
+### Function Definition Syntax
+
+While not strictly necessary, a means of simultaneously defining functions in
+both languages at once allows a larger portion of the codebase to only be
+written once.
+
+## Combinations
+
+### Awk and JavaScript
+
+```awk
+function fib(n) {
+    if (n < 2) {
+        return 1
+    } else {
+        return fib(n - 1) + fib(n - 2) 
+    }
+}
+```
+
+### C and JavaScript
+
+Despite having identical single line and multi-line comment syntax, escaping
+between C and JavaScript is surprisingly easy. Two techniques are possible, both
+relying on differences in how C and JavaScript interpret the end of a line.
+
+Both languages see `'\n'` as introducing a new line, but JavaScript also
+considers the characters ` ` (line separator) and ` ` (paragraph separator) to
+introduce a new line. By starting a single line comment in both languages,
+then placing one of the Unicode separators, a new multi-line comment can be
+started in JavaScript that won't be seen by C. The following lines have escaped
+into C only code.
+
+```c
+// A comment in C and JS  /* multi-line comment in JS, but same comment in C
+```
+
+Alternately, C interprets a `\` as the final character of a single line comment
+as continuing that comment onto the next line, where JavaScript sees the end of
+the comment. Starting a multiline comment on the next line escapes into C only
+code for the following lines.
+
+```c
+// A comment in C and JS \
+/* multiline comment in JS, but single line comment from the previous line in C
+```
+
+Both techniques are equivalent, the first can be more compact, the second is
+easier to type because all of the characters required are ASCII. Some JavaScript
+syntax highlighters fail to recognise the Unicode line endings, so the second
+technique can be useful since being able to switch back and forth between
+syntax highlighting modes helps with double-checking polyglot code. It also
+makes the functions look like they're wearing a little hat.
+
+```c
+//\
+function fib(x) { /*
+unsigned fib(unsigned x) { // */
+  return x > 1 ? fib(x - 1) + fib(x - 2) : 1;
+}
+```
+
+With either escape technique, it's possible to swap back and forth between C
+and JS multi-line comments with `/*/`, which is neater than most language pairs.
+
+```c
+// this line is both \
+/* this line is JS
+// this line is C
+/*/
+// this line is JS
+/*/
+// this line is C */
+// this line is both
+```
+
+### Common Lisp and Scheme
+
+Common Lisp and Scheme are both quite similar in syntax due to being
+S-expression based languages. Both languages have homoiconic macros, so it's
+possible to define macros which convert between `defvar`/`defun` and
+`define` expressions.
+
+```lisp
+#!/usr/bin/guile
+(macro defun (name args . rest)
+ (cons 'defun (cons (cons name args) rest))) ;!#
+
+(defun fibonacci (x)
+ (if (> x 1)
+  (+ (fib (- n 1)) (fib (- n 2)))
+  1))
+```
+
+#### ...and Clojure
+
+Clojure's `[]` syntax for vectors makes it impossible to for Scheme or Common
+Lisp to fit Clojure's syntax for function definitions, but it's possible to
+write `defun`/`define` macros in Clojure which imitate CL/Scheme style.
+
+### Julia and Lua
+
+Julia and Lua's comment syntaxes don't overlap, but Julia's comment syntax is
+Lua's length prefix operator, so it's only necessary to write enough code in
+both languages until it's valid to get the length of something, then it's
+trivial to escape into a multiline Lua comment. Combining this with the
+`then = true` trick for uniting Lua and Julia's `if` statement syntax, it's
+quite easy to write Julia and Lua polyglot code.
+
+```lua
+local _ = #{}--[[
+then = true #]]
+
+function fib(n)
+    if n < 2 then
+        return 1
+    else
+        return fib(n - 1) + fib(n - 2)
+    end
+end
+```
+
+### Julia and Ruby
+
+`#=` starts a single line comment in Ruby and a multiline comment in Julia.
+This makes it trivial to escape between languages. Combined function
+declarations, despite the differing `def`/`function` keywords, are relatively
+straightforward.
+
+```julia
+#==# function #=
+def # =#
+fib(n)
+    if n < 2
+        1
+    else
+        fib(n - 1) + fib(n - 2)
+    end
+end
+```
+
+### Nim and Python
+
+```python
+#[]#proc fib(n: int): int = #[
+def fib(n): #]#
+    if n < 2:
+        return 1
+    else:
+        return fib(n - 1) + fib(n - 2)
+```
 
 ### Comment Syntax Comparison
 
@@ -151,11 +335,11 @@ def printf(s, *args, **kwargs):
 | Clojure         | String |
 | Common Lisp     | String |
 | D               | String | Char   |                  | TODO
-| Haskell         | String | Char   |
+| Haskell         | String | Char   | Prefix to infix
 | JavaScript      | String | String | Multiline string
 | Julia           | String | Char   | Command          | Multiline string
 | Lua             | String | String
-| Nim             | String | Char   | Infix operator   | Multiline string
+| Nim             | String | Char   | Infix to prefix  | Multiline string
 | Python          | String | String |                  | `"a"`
 | Ruby            | String | String |                  | `"a"`
 | Scheme          | String |
@@ -181,9 +365,9 @@ make it an identifier in Ruby but the same word in any other language.
 | [D][d-doc]        | ✔️ | `///`       | After
 | [D][d-doc]        | ✔️ | `/**` `*/`  | Before
 | [D][d-doc]        | ✔️ | `/++` `+/`  | Before
-| [Haskell][hs-doc] | 〰️ | `-- |`      | Before   |                   |                 | At the REPL, `:type fn` `:info sym` `:kind type` or `:browse module`
+| [Haskell][hs-doc] | 〰️ | `-- \|`     | Before   |                   |                 | At the REPL, `:type fn` `:info sym` `:kind type` or `:browse module`
 | [Haskell][hs-doc] | 〰️ | `-- ^`      | After
-| [Haskell][hs-doc] | 〰️ | `{-|` `-}`  | Before
+| [Haskell][hs-doc] | 〰️ | `{-\|` `-}` | Before
 | JavaScript        | 〰️ | `/**` `*/`  | Before
 | [Julia][jl-doc]   | ✔️ | String      | Before   | `Docs.doc`        | `apropos`       | At the REPL, `?x` for `Docs.doc`, `?"x"` for `apropos`
 | Lua               | 〰️ | `---`       | Before
@@ -240,7 +424,7 @@ make it an identifier in Ruby but the same word in any other language.
 | Common Lisp     | `-a` | `(floor a b)`          | `(mod a b)`    | `(rem a b)`       | `(expt a b)`
 | D               | `-a` | `a / b`                |                | `a % b`           | `a ** b`
 | Haskell         | `-a` | `div a b`              | `mod a b`      | `rem a b`         | `a ** b`
-| JavaScript      | `-a` | `a / b | 0`            |                | `a % b`           | `a ** b`
+| JavaScript      | `-a` | `a / b \| 0`           |                | `a % b`           | `a ** b`
 | Julia           | `-a` | `a ÷ b`                | `mod(a, b)`    | `a % b`           | `a ^ b`
 | Lua             | `-a` | `a // b`               | `a % b`        |                   | `a ^ b`
 | Nim             | `-a` | `a div b`              |                | `a mod b`
@@ -312,40 +496,38 @@ end
 
 | Language\Op     | and                 | or                 | not
 | --------------- | ------------------- | ------------------ | ---
-| Awk             | `a && b`            | `a || b`           | `!a`
-| C               | `a && b`            | `a || b`           | `!a`
+| Awk             | `a && b`            | `a \|\| b`         | `!a`
+| C               | `a && b`            | `a \|\| b`         | `!a`
 | Clojure         | `(and a b)`         | `(or a b)`         | `(not a)`
 | Common Lisp     | `(and a b)`         | `(or a b)`         | `(not a)`
-| D               | `a && b`            | `a || b`           | `!a`
-| Haskell         | `a && b`            | `a || b`           | `not a`
-| JavaScript      | `a && b`            | `a || b`           | `!a`
-| Julia           | `a && b`            | `a || b`           | `!a`
+| D               | `a && b`            | `a \|\| b`         | `!a`
+| Haskell         | `a && b`            | `a \|\| b`         | `not a`
+| JavaScript      | `a && b`            | `a \|\| b`         | `!a`
+| Julia           | `a && b`            | `a \|\| b`         | `!a`
 | Lua             | `a and b`           | `a or b`           | `not a`
 | Nim             | `a and b`           | `a or b`           | `not a`
 | Python          | `a and b`           | `a or b`           | `not a`
-| Ruby            | `a && b`, `a and b` | `a || b`, `a or b` | `!a`
+| Ruby            | `a && b`, `a and b` | `a \|\| b` `a or b`| `!a`
 | Scheme          | `(and a b)`         | `(or a b)`         | `(not a)`
-| Shell           | `a && b`            | `a || b`           | `!a`
+| Shell           | `a && b`            | `a \|\| b`         | `!a`
 | Standard ML     | `a andalso b`       | `a orelse b`       | `not a`
 
 ##### Bitwise Operators
 
-| Language\Op     | and            | or                | xor                | not
-| --------------- | -------------- | ----------------- | ------------------ | ---
-| Awk             |
-| C               | `a & b`        | `a | b`           | `a ^ b`            | `~a`
+| Language\Op     | and            | or                | xor                | not         | notes
+| --------------- | -------------- | ----------------- | ------------------ | ----------- | -----
+| C               | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
 | Clojure         |
 | Common Lisp     |
-| D               | `a & b`        | `a | b`           | `a ^ b`            | `~a`
+| D               | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
 | Haskell         |
-| JavaScript      | `a & b`        | `a | b`           | `a ^ b`            | `~a`
-| Julia           | `a & b`        | `a | b`           | `a ⊻ b`            | `~a`
-| Lua             | `a & b`        | `a | b`           | `a ~ b`            | `~a`
-| Nim             | `masked(a, b)` | `setMasked(a, b)` | `flipMasked(a, b)` | `bitnot(a)`
-| Python          | `a & b`        | `a | b`           | `a ^ b`            | `~a`
-| Ruby            | `a & b`        | `a | b`           | `a ^ b`            | `~a`
+| JavaScript      | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
+| Julia           | `a & b`        | `a \| b`          | `a ⊻ b`            | `~a`
+| Lua             | `a & b`        | `a \| b`          | `a ~ b`            | `~a`
+| Nim             | `masked(a, b)` | `setMasked(a, b)` | `flipMasked(a, b)` | `bitnot(a)` | needs `std/bitops`
+| Python          | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
+| Ruby            | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
 | Scheme          |
-| Shell           |
 | Standard ML     |
 
 #### Variables
@@ -374,6 +556,52 @@ unless otherwise stated.
 | Shell           | `x=y`
 | Standard ML     |                 | `val x = y;`
 
+###### Scoping: Awk
+
+All variables are globally scoped and implicitly declared. In functions, the
+convention is to declare additional parameters to use as local variables.
+
+```awk
+function doSomething(x, y,             a, b, c) {
+    # x and y are params
+    # a, b and c are local variables
+}
+```
+
+###### Scoping: C
+
+In ANSI C, all variables must be declared at the beginning of the function, but
+this restriction is loosened in later C standards.
+
+###### Scoping: JavaScript
+
+The `var` keyword in JavaScript declares a hoisted variable. Hoisted variable
+are implicitly moved to the beginning of the variable's scope
+
+###### Scoping: Julia
+
+Julia's has [global and local lexical scoping](https://docs.julialang.org/en/v1/manual/variables-and-scoping/#scope-of-variables). Global scoping works different
+from other languages, in that declaring a module introduces a new global scope.
+
+The top-level global scope is actually the scope of the Main module, all other
+modules are created within the Main module's global scope. Modules can be
+declared inside other modules, but not inside local scopes, which means that
+a local scope can be nested in a local scope or a global scope, but a global
+scope can only be nested in another global scope. The `global` keyword can be
+used to declare a variable in the innermost module scope which contains the
+declaration.
+
+Functions, `do` and `let` blocks, generators and comprehensions introduce a new
+local scope, and any variable declaration within it is implicitly local.
+`begin` blocks also introduce a new scope, but declarations within it are
+implicitly global, the `local` keyword must be used to scope a variable to a
+`begin` block.
+
+###### Scoping: Lua
+
+Functions, `do`, `while`, `for` and `repeat` blocks all introduce a new local
+scope. [Variables are implicitly global](https://www.lua.org/manual/5.4/manual.html#3.5),
+and the `local` keyword must be used to locally scope a variable.
 
 ### Documentation Sources
 
