@@ -1,3 +1,7 @@
+.PHONY: test
+test:
+	julia test.jl hello-world
+
 .PHONY: clean
 clean:
 	rm -r o/*
@@ -21,3 +25,6 @@ o/%.d_compiled: %
 o/%.nim_compiled: %
 	mkdir -p $(dir $@)
 	nim compile "--out:$@" --hints:off $<
+
+o/proquint_c: proquint/proquint_c.js
+	$(CC) -xc -DPROQUINT_MAIN=main -o $@ $<

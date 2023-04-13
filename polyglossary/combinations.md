@@ -1,5 +1,27 @@
 # Viable Language Combinations
 
+---- | awk | c | clj | lisp | d | hs | js | jl | lua | nim | py | rb | scm | sh
+---- | --- | - | --- | ---- | - | -- | -- | -- | --- | --- | -- | -- | --- | --
+sml  | 〰️  |   | 〰️  |  〰️  |   | ✔️ |    | 〰️ | 〰️  | 〰️  | 〰️ | 〰️ |  〰️ | 〰️
+sh   | ❌  |〰️ |     |  〰️  |   | 〰️ |    | ❌ | 〰️  | 〰️  | ❌ | 〰️ |  〰️ | 🟰
+scm  |     |〰️ | ✔️  |  ✔️  |   | ✔️ | 〰️ | 〰️ | 〰️  | 〰️  | 〰️ | 〰️ |  🟰  |
+rb   | 〰️  |✔️ |     |  〰️  |   | 〰️ | 〰️ | ✔️ | 〰️  | 〰️  | ✔️ | 🟰  |
+py   | 〰️  |〰️ |     |  〰️  |   | 〰️ | 〰️ | ✔️ | 〰️  | ✨  | 🟰  |
+nim  | 〰️  |〰️ |     |  〰️  |   | 〰️ |    | ✔️ | 〰️  |  🟰  |
+lua  | 〰️  |   |     |  〰️  |   | ✔️ | 〰️ | ✨ |  🟰  |
+jl   | ✔️  |✔️ |     |  〰️  |   | ✔️ | 〰️ | 🟰  |
+js   | ✔️  |✨ |     |  〰️  |〰️ | 〰️ | 🟰  |
+hs   | 〰️  |〰️ | 〰️  |  ✔️  |〰️ | 🟰  |
+d    |     |✔️ |     |      | 🟰 |
+lisp | 〰️  |〰️ | ✔️  |  🟰   |
+clj  | 〰️  |   |  🟰  |
+c    | 〰️  | 🟰 |
+
+- ✨ - proof of concept completed
+- ✔️ - potential to work well
+- 〰️ - have shared a hello world together
+- ❌ - seems impossible
+- 🟰  - these are the same language
 
 ## What Makes A Good Combination
 
@@ -68,10 +90,10 @@ into C only code.
 // A comment in C and JS  /* multi-line comment in JS, but same comment in C
 ```
 
-Alternately, C interprets a `\` as the final character of a single line comment
-as continuing that comment onto the next line, where JavaScript sees the end of
-the comment. Starting a multiline comment on the next line escapes into C only
-code for the following lines.
+Alternatively, C interprets a `\` as the final character of a single comment as
+continuing that comment onto the next line, where JavaScript sees the end of the
+comment. Starting a multiline comment on the next line escapes into C only code
+for the following lines.
 
 ```c
 // A comment in C and JS \
@@ -636,6 +658,7 @@ syntax and basic idioms of all of the languages listed.
 - [Haskell Hierarchical Libraries](https://downloads.haskell.org/ghc/latest/docs/libraries/)
 - [Learn You A Haskell For Great Good!](http://learnyouahaskell.com/chapters)
 - [The Haskell Wiki](https://wiki.haskell.org/Haskell)
+- [Tour of the Haskell Syntax](https://cs.fit.edu/~ryan/cse4250/haskell-syntax.html)
 
 #### JavaScript Reference
 
