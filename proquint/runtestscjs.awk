@@ -1,4 +1,4 @@
-#!/usr/bin/gawk
+#!/usr/bin/awk
 
 BEGIN {
   print("make -s o/proquint_c") | "sh"

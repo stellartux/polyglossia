@@ -505,52 +505,98 @@ end
 | D               | `a == b`         | `a != b`          | `a === b`    | `a !== b`
 | Haskell         | `a == b`         | `a /= b`
 | JavaScript      | `a == b`         | `a != b`          | `a === b`    | `a !== b`
-| Julia           | `a == b`         | `a != b` `a ≠ b`  | `a === b`    | `a !== b`
+| Julia           | `a == b`         | `a != b`, `a ≠ b` | `a === b`    | `a !== b`
 | Lua             | `a == b`         | `a ~= b`
 | Nim             | `a == b`         | `a != b`
 | Python          | `a == b`         | `a != b`
 | Ruby            | `a == b`         | `a != b`          | `a === b`    | `a !== b`
 | Scheme          | `(eq? a b)`      |
 | Shell           | `expr $a -eq $b` | `expr $a -neq $b`
-| Standard ML     | `a = b`
+| Standard ML     | `a = b`          | `a <> b`
 
 ##### Logical Operators
 
-| Language\Op     | and                 | or                 | not
-| --------------- | ------------------- | ------------------ | ---
-| Awk             | `a && b`            | `a \|\| b`         | `!a`
-| C               | `a && b`            | `a \|\| b`         | `!a`
-| Clojure         | `(and a b)`         | `(or a b)`         | `(not a)`
-| Common Lisp     | `(and a b)`         | `(or a b)`         | `(not a)`
-| D               | `a && b`            | `a \|\| b`         | `!a`
-| Haskell         | `a && b`            | `a \|\| b`         | `not a`
-| JavaScript      | `a && b`            | `a \|\| b`         | `!a`
-| Julia           | `a && b`            | `a \|\| b`         | `!a`
-| Lua             | `a and b`           | `a or b`           | `not a`
-| Nim             | `a and b`           | `a or b`           | `not a`
-| Python          | `a and b`           | `a or b`           | `not a`
-| Ruby            | `a && b`, `a and b` | `a \|\| b` `a or b`| `!a`
-| Scheme          | `(and a b)`         | `(or a b)`         | `(not a)`
-| Shell           | `a && b`            | `a \|\| b`         | `!a`
-| Standard ML     | `a andalso b`       | `a orelse b`       | `not a`
+| Language\Op     | and                 | or                   | not
+| --------------- | ------------------- | -------------------- | ---
+| Awk             | `a && b`            | `a \|\| b`           | `!a`
+| C               | `a && b`            | `a \|\| b`           | `!a`
+| Clojure         | `(and a b)`         | `(or a b)`           | `(not a)`
+| Common Lisp     | `(and a b)`         | `(or a b)`           | `(not a)`
+| D               | `a && b`            | `a \|\| b`           | `!a`
+| Haskell         | `a && b`            | `a \|\| b`           | `not a`
+| JavaScript      | `a && b`            | `a \|\| b`           | `!a`
+| Julia           | `a && b`            | `a \|\| b`           | `!a`
+| Lua             | `a and b`           | `a or b`             | `not a`
+| Nim             | `a and b`           | `a or b`             | `not a`
+| Python          | `a and b`           | `a or b`             | `not a`
+| Ruby            | `a && b`, `a and b` | `a \|\| b`, `a or b` | `!a`
+| Scheme          | `(and a b)`         | `(or a b)`           | `(not a)`
+| Shell           | `a && b`            | `a \|\| b`           | `!a`
+| Standard ML     | `a andalso b`       | `a orelse b`         | `not a`
 
 ##### Bitwise Operators
 
-| Language\Op     | and            | or                | xor                | not         | notes
-| --------------- | -------------- | ----------------- | ------------------ | ----------- | -----
-| C               | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
-| Clojure         |
-| Common Lisp     |
-| D               | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
-| Haskell         |
-| JavaScript      | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
-| Julia           | `a & b`        | `a \| b`          | `a ⊻ b`            | `~a`
-| Lua             | `a & b`        | `a \| b`          | `a ~ b`            | `~a`
-| Nim             | `masked(a, b)` | `setMasked(a, b)` | `flipMasked(a, b)` | `bitnot(a)` | needs `std/bitops`
-| Python          | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
-| Ruby            | `a & b`        | `a \| b`          | `a ^ b`            | `~a`
-| Scheme          |
-| Standard ML     |
+| Language\Op     | and               | or                | xor                  | not            | notes
+| --------------- | ----------------- | ----------------- | -------------------- | -------------- | -----
+| C               | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
+| Clojure         | `(bit-and a b)`   | `(bit-or a b)`    | `(bit-xor a b)`      | `(bit-not a)`
+| Common Lisp     | `(logand a b)`    | `(logior a b)`    | `(logxor a b)`       | `(lognot a)`
+| D               | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
+| Haskell         | `a .&. b`         | `a .\|. b`        | `xor a b`            | `complement a` | `import Data.Bits`
+| JavaScript      | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
+| Julia           | `a & b`           | `a \| b`          | `a ⊻ b`, `xor(a, b)` | `~a`
+| Lua             | `a & b`           | `a \| b`          | `a ~ b`              | `~a`
+| Nim             | `masked(a, b)`    | `setMasked(a, b)` | `flipMasked(a, b)`   | `bitnot(a)`    | `import std/bitops`
+| Python          | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
+| Ruby            | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
+| Scheme          | `(logand a b)`    | `(logior a b)`    | `(logxor a b)`       | `(lognot a)`
+| Standard ML     | `Word.andb(a, b)` | `Word.orb(a, b)`  | `Word.xorb(a, b)`    | `Word.notb(a)` | `a` and `b` must be converted to [Words](https://smlfamily.github.io/Basis/word.html), i.e. `Word.fromInt(a)`
+
+##### Bitshift Operators
+
+| Language\Op     | left                   | right signed            | right unsigned
+| --------------- | ---------------------- | ----------------------- | --------------
+| C               | `a << b`               |                         | `a >> b`
+| Clojure         | `(bit-shift-left a b)` | `(bit-shift-right a b)` | `(unsigned-bit-shift-right a b)`
+| Common Lisp     | `(ash a b)`            | `(ash a -b)`
+| Haskell         | `shift a b`            | `shift a (-b)`
+| JavaScript      | `a << b`               | `a >> b`                | `a >>> b`
+| Julia           | `a << b`               | `a >> b`                | `a >>> b`
+| Lua             | `a << b`               |                         | `a >> b`
+| Nim             | `a shl b`              | `a shr b`, `ashr(a, b)`
+| Python          | `a << b`               | `a >> b`
+| Ruby            | `a << b`               | `a >> b`
+| Scheme          | `(ash a b)`            | `(ash a -b)`
+| Standard ML     | `Word.<<(a, b)`        | `Word.~>>(a, b)`        | `Word.>>(a, b)`
+
+###### Lua Bitshift
+
+```lua
+--- Signed bitshift right
+---@param a integer
+---@param b integer
+function sar(a, b)
+    return (a >> b) | (a & 0x8000000000000000)
+end
+```
+
+###### Python Bitshift
+
+```python
+def shr(a, b: int):
+    "Unsigned bitshift right"
+    return (a >> b) & 0x7fffffffffffffff
+```
+
+###### Ruby Bitshift
+
+```ruby
+##
+# Unsigned bitshift right
+def shr(a, b)
+    return (a >> b) & 0x7fffffffffffffff
+end
+```
 
 #### Variables
 
@@ -625,7 +671,122 @@ Functions, `do`, `while`, `for` and `repeat` blocks all introduce a new local
 scope. [Variables are implicitly global](https://www.lua.org/manual/5.4/manual.html#3.5),
 and the `local` keyword must be used to locally scope a variable.
 
-### Documentation Sources
+#### Errors
+
+Each code snippet shows off features which are available to the language.
+Documents:
+
+- Terminology for throwing/raising/yeeting errors/exceptions/oopsydoodles.
+- Catching only specific error types, if possible
+- Rethrowing caught errors without ruining the stack trace
+- `assert` functionality, if any
+- Whether the default message on assertions is of any use in figuring out which assertion failed
+
+##### JavaScript Errors
+
+- [mdn Error object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#examples)
+- [Deno assert docs](https://deno.land/std@0.183.0/testing/asserts.ts?doc=)
+
+```js
+try {
+    throw new Error(msg)
+} catch (error) {
+    throw(error)
+} finally {
+    // ...
+}
+
+// node has `assert` preloaded, for deno and browser
+import { assert } from 'https://deno.land/std/testing/asserts.ts'
+assert(1 === 1, 'Default message useless')
+```
+
+##### Julia Errors
+
+```julia
+try
+    throw(ErrorException(msg))
+catch error
+    rethrow()
+finally
+    # ...
+end
+
+@assert 1 == 1 "Default message useful"
+```
+
+##### Lua Errors
+
+- [Error Handling in Lua](https://www.lua.org/manual/5.4/manual.html#2.3)
+
+```lua
+function f() error(msg) end
+local success, result = pcall(f, ...)
+if success then
+    -- result is value returned by f(...)
+else
+    -- result is error message
+    error(result)
+end
+```
+
+##### Nim Errors
+
+- [Nim Manual: Exception Handling](https://nim-lang.org/docs/manual.html#exception-handling)
+- [Nim Manual: system/assertions](https://nim-lang.org/docs/assertions.html)
+
+```nim
+try:
+    raise newException(ValueError, msg)
+except ValueError:
+    let
+        error = (ref ValueError)(getCurrentException())
+        msg = getCurrentExceptionMsg()
+    raise
+except IOError as error:
+    raise error
+finally:
+    # ...
+
+# goes away with -d:danger or --assertions:off
+assert(1 == 1, "Default message useful")
+# can't be removed
+doAssert(1 == 1, "Default message useful")
+
+# bonus feature: defer
+
+let f = open("path")
+defer(close(f))
+f.write("abc")
+
+# equivalently...
+
+let f = open("path")
+try:
+    f.write("abc")
+finally:
+    close(f)
+
+```
+
+##### Python Errors
+
+```py
+try:
+    raise Exception(msg)
+except (RuntimeError, TypeError, NameError):
+    raise
+except Exception as error:
+    raise error
+except:
+    # ...
+finally:
+    # ...
+
+assert 1 == 1, "Default message useless"
+```
+
+### Documentation
 
 [Learn X in Y minutes](https://learnxinyminutes.com/) has good overviews of
 syntax and basic idioms of all of the languages listed.
