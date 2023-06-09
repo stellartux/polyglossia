@@ -1,4 +1,20 @@
-local Jl = setmetatable({}, { __name = "Jl"})
+local Jl = setmetatable({}, { __name = "Jl" })
+
+function Jl.all(fn, ...)
+    for k, v in ... do
+        if v == nil then v = k end
+        if not fn(v) then return false end
+    end
+    return true
+end
+
+function Jl.any(fn, ...)
+    for k, v in ... do
+        if v == nil then v = k end
+        if fn(v) then return true end
+    end
+    return false
+end
 
 local function digitsnext(n, i)
     if n >= 10 ^ i then
@@ -27,8 +43,25 @@ function Jl.filter(pred, itr, t, k)
     end
 end
 
+function Jl.get(t, k, v)
+    local fn
+    if type(t) == "function" then
+        fn, t, k = t, k, v
+    end
+    if t[k] == nil then
+        if fn then v = fn(k) end
+        t[k] = v
+    end
+    return t[k]
+end
+
+local function keysnext(t, k) return (next(t, k)) end
+function Jl.keys(t)
+    return keysnext, t, nil
+end
+
 function Jl.map(fn, i, t, k)
-    return function ()
+    return function()
         local v
         k, v = i(t, k)
         if k ~= nil then
