@@ -9,9 +9,9 @@ local map = Jl.map
 local println = Jl.println
 local sum = Jl.sum
 local UnitRange = Jl.UnitRange
-function has(t) return function(k) return t[k] end end
+local function has(t) return function(k) return t[k] end end
 local collect = Jl.keys
-function Set(...)
+local function Set(...)
     local result = {}
     for x in ... do result[x] = true end
     return result

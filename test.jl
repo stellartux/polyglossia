@@ -66,7 +66,7 @@ function tocmd(file)
         elseif lang == "sh"
             push!(cmds, `sh --posix $(file)`)
         else
-            println("Don't know what to do with $(lang)")
+            println("Skipping $(lang)")
         end
     end
     cmds
@@ -75,7 +75,7 @@ end
 function testfile(file, rootname=".")
     printstyled("\n[", file, "]\n"; color=:black)
     Threads.@threads for cmd in tocmd("$(rootname)/$(file)")
-        run(cmd)
+        run(pipeline(cmd; stderr=devnull))
     end
 end
 

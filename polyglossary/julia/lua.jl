@@ -40,7 +40,6 @@ and(t::Tuple) = and(first(t))
 Julia `or` does not short circuit, both sides are evaluated before the `or`.
 """
 or(a, b) = then(a) ? a : b
-or(b) = Base.Fix2(or, b)
 or(::Tuple{}, b) = b
 or(a::Tuple, b) = or(first(a), b)
 or(b) = Base.Fix2(or, b)

@@ -95,6 +95,10 @@ null = isempty
 rev = reverse
 tl = Base.tail
 
+struct Empty <: Exception
+    msg
+end
+
 last = last
 getItem(l) = if !isempty(l) Some((hd(l), tl(l)))
 nth(l, i::Integer) = l[firstindex(l) + i]

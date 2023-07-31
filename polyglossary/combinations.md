@@ -264,6 +264,97 @@ def fib(n): #]#
 | Shell           | ❌   | ❌      | ✔️    | ✔️
 | Standard ML     | ✔️   | ✔️      | ✔️    | ✔️
 
+#### Vararg Syntax Comparison
+
+| Language\Syntax | Opt | Var | Kwargs | Undercall
+| --------------- | :-: | :-: | :----: | ---------
+| Awk             | ❌  | ❌  | ❌     | ✔️
+| C               | ❌  | ✔️  | ❌     | ❌
+| Clojure         | ✔️  | ✔️  | ✔️     | ❌
+| Common Lisp     | ✔️  | ✔️  | ✔️     | ❌
+| Haskell         | ❌  | ❌  | ❌     | ❌
+| JavaScript      | ✔️  | ✔️  | ❌     | ✔️
+| Julia           | ✔️  | ✔️  | ✔️     | 〰️
+| Lua             | 〰️  | ✔️  | ❌     | ✔️
+| Nim             | ✔️  | ✔️  | ✔️     | ❌
+| Python          | ✔️  | ✔️  | ✔️     | ✔️
+| Ruby            | ✔️  | ✔️  | ✔️     | ✔️
+| Scheme          | ✔️  | ✔️  | ✔️     | ❌
+| Standard ML     | ❌  | ❌  | ❌     | ❌
+
+- Opt: Optional arguments
+- Var: Trailing varargs
+- Kwargs: Keyword arguments
+- Undercall: Functions can be called with fewer params than declared
+
+##### JavaScript: Arguments
+
+```js
+/**
+ * @param {any} x required
+ * @param {integer} [y=0] optional
+ * @param {...any} zs varargs
+ */
+function f(x, y = 0, ...zs) {
+    for (const z of zs) {
+        console.log(z)
+    }
+}
+```
+
+##### Julia: Arguments
+
+```julia
+function f(x, y::Integer=0, zs...; kwarg=true, kwargs...)
+    for z in zs
+        println(z)
+    end
+end
+```
+
+Positional arguments and keyword arguments are seperated by a semicolon.
+
+##### Lua: Arguments
+
+```lua
+---@param x any required
+---@param y integer? optional
+---@param ... any vararg
+function f(x, y, ...)
+    y = y or 0
+    for i = 1, select("#", ...) do
+        local z = select(i, ...)
+        print(z)
+    end
+end
+```
+
+Because of Lua's specific syntax for varargs, a function can only refer to a
+vararg declared in its own scope. Varargs passed to inner functions must be
+wrapped in a table.
+
+```lua
+function outer(...)
+    local varargs = table.pack(...)
+    local function inner(i)
+        return varargs[i]
+    end
+    return inner
+end
+```
+
+##### Python: Arguments
+
+```python
+def f(x, y: int = 0, *zs, **kwargs):
+    for z in zs:
+        print(z)
+```
+
+In Python, arguments are both positional and keyword. `f(1, 2)` and
+`f(y = 2, x = 1)` are equivalent. The `**kwargs` argument is a table holding
+additional keyword arguments not defined in the function signature.
+
 ### Writing To `stdout` Comparison
 
 | Language\Method | Write w/ `'\n'` | Write w/o `'\n'`   | Formatted
@@ -350,22 +441,22 @@ def printf(s, *args, **kwargs):
 
 ### Quotation Syntax
 
-| Language\Syntax |  `"a"` | `'a'`  | ``` `a` ```      | `"""a"""`
-| --------------- | ------ | ------ | ---------------- | ---------
-| Awk             | String | String |                  | `"a"`
-| C               | String | Char   |                  | `"a"`
+| Language\Syntax |  `"a"` | `'a'`       | ``` `a` ```      | `"""a"""`
+| --------------- | ------ | ----------- | ---------------- | ---------
+| Awk             | String | String      |                  | `"a"`
+| C               | String | Char        |                  | `"a"`
 | Clojure         | String |
 | Common Lisp     | String |
-| D               | String | Char   |                  | TODO
-| Haskell         | String | Char   | Prefix to infix
-| JavaScript      | String | String | Multiline string
-| Julia           | String | Char   | Command          | Multiline string
+| D               | String | Char        |                  | TODO
+| Haskell         | String | Char        | Prefix to infix  |
+| JavaScript      | String | String      | Multiline string |
+| Julia           | String | Char        | Command          | Multiline string
 | Lua             | String | String
-| Nim             | String | Char   | Infix to prefix  | Multiline string
-| Python          | String | String |                  | `"a"`
-| Ruby            | String | String |                  | `"a"`
-| Scheme          | String |
-| Shell           | String | String |
+| Nim             | String | Char        | Infix to prefix  | Multiline string
+| Python          | String | String      |                  | `"a"`
+| Ruby            | String | String      |                  | `"a"`
+| Scheme          | String | Symbol `a'` | Symbol           | `"" "a" ""`
+| Shell           | String | String      |
 | Standard ML     | String |
 
 ### Non-Breaking Space `" "`
@@ -397,7 +488,7 @@ make it an identifier in Ruby but the same word in any other language.
 | Nim               | ✔️ | `##[` `]##` | After
 | Python            | ✔️ | String      | After    | `fn.__doc__`
 | [Ruby][rb-doc]    | ✔️ | `#`         | Before
-| Scheme            | ✔️ | String      | After    | `describe`        |                 | Chicken Scheme has an [`apropos` egg].
+| Scheme            | ✔️ | String      | After    | `describe`, `procedure-documentation` |                 | Chicken Scheme has an [`apropos` egg].
 | Shell             | 〰️ | `# .DOCUMENTS fn` `# .ENDOC` | Anywhere
 | Standard ML       | ❌ |
 
@@ -419,14 +510,14 @@ make it an identifier in Ruby but the same word in any other language.
 
 #### REPL Support
 
-| Language          | multiline | debugger | command
-| ----------------- | --------- | -------- | -------
+| Language          | multiline | debugger | command                     | debug function
+| ----------------- | --------- | -------- | --------------------------- | ---
 | Clojure           |  ✔️       |          | `clj`
 | Common Lisp       |  ✔️       |  ✔️      | `sbcl`
 | Haskell           |  ✔️       |          | `ghci`
-| JavaScript        |  ✔️       |          | `node`, `deno repl`, `qjs`
+| JavaScript        |  ✔️       |  〰️      | `node`, `deno repl`, `qjs`  | `debugger`
 | Julia             |  ✔️       |          | `julia`
-| Lua               |           |          | `lua`
+| Lua               |           |  〰️      | `lua`                       | `debug.debug()`
 | Nim               |           |          | `nim secret`
 | Python            |  ✔️       |          | `python`
 | Ruby              |  ✔️       |          | `irb`
@@ -500,8 +591,6 @@ end
 | --------------- | ---------------- | ----------------- | ------------ | ----------------
 | Awk             | `a == b`         | `a != b`
 | C               | `a == b`         | `a != b`          | `a === b`    | `a !== b`
-| Clojure         | `(eq? a b)`      |
-| Common Lisp     |
 | D               | `a == b`         | `a != b`          | `a === b`    | `a !== b`
 | Haskell         | `a == b`         | `a /= b`
 | JavaScript      | `a == b`         | `a != b`          | `a === b`    | `a !== b`
@@ -510,9 +599,10 @@ end
 | Nim             | `a == b`         | `a != b`
 | Python          | `a == b`         | `a != b`
 | Ruby            | `a == b`         | `a != b`          | `a === b`    | `a !== b`
-| Scheme          | `(eq? a b)`      |
 | Shell           | `expr $a -eq $b` | `expr $a -neq $b`
 | Standard ML     | `a = b`          | `a <> b`
+
+- [Scheme Equality](https://www.gnu.org/software/guile/manual/html_node/Equality.html)
 
 ##### Logical Operators
 
@@ -546,7 +636,7 @@ end
 | JavaScript      | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Julia           | `a & b`           | `a \| b`          | `a ⊻ b`, `xor(a, b)` | `~a`
 | Lua             | `a & b`           | `a \| b`          | `a ~ b`              | `~a`
-| Nim             | `masked(a, b)`    | `setMasked(a, b)` | `flipMasked(a, b)`   | `bitnot(a)`    | `import std/bitops`
+| Nim             | `a and b`         | `a or b`          | `a xor b`            | `not a`
 | Python          | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Ruby            | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Scheme          | `(logand a b)`    | `(logior a b)`    | `(logxor a b)`       | `(lognot a)`
@@ -558,7 +648,7 @@ end
 | --------------- | ---------------------- | ----------------------- | --------------
 | C               | `a << b`               |                         | `a >> b`
 | Clojure         | `(bit-shift-left a b)` | `(bit-shift-right a b)` | `(unsigned-bit-shift-right a b)`
-| Common Lisp     | `(ash a b)`            | `(ash a -b)`
+| Common Lisp     | `(ash a b)`            | `(ash a (- b))`
 | Haskell         | `shift a b`            | `shift a (-b)`
 | JavaScript      | `a << b`               | `a >> b`                | `a >>> b`
 | Julia           | `a << b`               | `a >> b`                | `a >>> b`
@@ -566,7 +656,7 @@ end
 | Nim             | `a shl b`              | `a shr b`, `ashr(a, b)`
 | Python          | `a << b`               | `a >> b`
 | Ruby            | `a << b`               | `a >> b`
-| Scheme          | `(ash a b)`            | `(ash a -b)`
+| Scheme          | `(ash a b)`            | `(ash a (- b))`
 | Standard ML     | `Word.<<(a, b)`        | `Word.~>>(a, b)`        | `Word.>>(a, b)`
 
 ###### Lua Bitshift
@@ -641,10 +731,17 @@ function doSomething(x, y,             a, b, c) {
 In ANSI C, all variables must be declared at the beginning of the function, but
 this restriction is loosened in later C standards.
 
+###### Const: C
+
+In C, `const` is a type descriptor, rather than a keyword introducing a
+variable declaration.
+
 ###### Scoping: JavaScript
 
 The `var` keyword in JavaScript declares a hoisted variable. Hoisted variable
-are implicitly moved to the beginning of the variable's scope
+are implicitly moved to the beginning of the variable's scope, and can be
+referred to before their declaration. The `let` and `const` keywords were
+introduced in ES6, which have block scoping.
 
 ###### Scoping: Julia
 
@@ -671,6 +768,75 @@ Functions, `do`, `while`, `for` and `repeat` blocks all introduce a new local
 scope. [Variables are implicitly global](https://www.lua.org/manual/5.4/manual.html#3.5),
 and the `local` keyword must be used to locally scope a variable.
 
+#### List Operations
+
+| Language\Op     | Literal syntax         | List comparison       | `==` empty list
+| --------------- | ---------------------- | --------------------- | ---------------
+| C               | `{1, 2, 3}`            |                       | `NULL`
+| Clojure         | `'(1 2 3)`, `[1 2 3]`  | `=`                   | `nil` `()` `[]`
+| Common Lisp     | `'(1 2 3)`             | `equalp`              | `nil` `()`
+| Haskell         | `[1, 2, 3]`            | `==`                  | `[]`
+| JavaScript      | `[1, 2, 3]`            |                       | `[]` `0` `false` `''`
+| Julia           | `[1, 2, 3]`            | `==`                  | `[]`
+| Lua             | `{ 1, 2, 3 }`
+| Nim             | `[1, 2, 3]`            | `==`                  | `[]`
+| Python          | `[1, 2, 3]`            | `==`                  | `[]`
+| Ruby            | `[1, 2, 3]`            | `==`                  | `[]`
+| Scheme          | `'(1 2 3)`             | `eq?` `equal?`        | `'()`
+| Shell           | `(1 2 3)`
+| Standard ML     | `[1, 2, 3]`            | `=`                   | `[]` `nil`
+
+##### JavaScript List Compare
+
+```js
+function listCompare(left, right) {
+  if (Array.isArray(left) && Array.isArray(right) && left.length === right.length) {
+    for (let i = 0; i < left.length; i++) {
+      if (!listCompare(left[i], right[i])) {
+        return false
+      }
+    }
+    return true
+  }
+  return left === right
+}
+```
+
+##### Lua List Compare
+
+```lua
+local function list_compare(left, right)
+    if type(left) == "table" and type(right) == "table" and #left == #right then
+        for i = 1, #left do
+            if not list_compare(left[i], right[i]) then
+                return false
+            end
+        end
+        return true
+    end
+    return left == right
+end
+```
+
+- pushfirst `([y, z], x) -> [x, y, z]`
+- popfirst `(([y, z]) -> y)`
+- push `([y, z], x) -> [y, z, x]`
+- pop `(([y, z]) -> z)`
+
+| Language\Op     | pushfirst                | popfirst              | push                  | pop
+| --------------- | ------------------------ | --------------------- | --------------------- | ---
+| Clojure         | `(cons x xs)`            | `(first xs)`
+| Common Lisp     | `(cons x xs)`            | `(car xs)`
+| Haskell         | `x : xs`                 |
+| JavaScript      | `xs.unshift(x)`          | `xs.shift()`          | `xs.push(x)`          | `xs.pop()`
+| Julia           | `pushfirst!(xs, x)`      | `popfirst!(xs)`       | `push!(xs, x)`        | `pop!(xs)`
+| Lua             | `table.insert(xs, 1, x)` | `table.remove(xs, 1)` | `table.insert(xs, x)` | `table.remove(xs)`
+| Nim             |
+| Python          | `xs.insert(0, x)`        |                       | `xs.append(x)`        | `xs.pop()`
+| Ruby            | `xs.unshift(x)`          | `xs.shift()`          | `xs.push(x)`          | `xs.pop()`
+| Scheme          | `(cons x xs)`            | `(car xs)`
+| Standard ML     | `x :: xs`                |                       | `xs @ [x]`
+
 #### Errors
 
 Each code snippet shows off features which are available to the language.
@@ -691,7 +857,11 @@ Documents:
 try {
     throw new Error(msg)
 } catch (error) {
-    throw(error)
+    if (error instanceof CustomError) {
+        // handle error type...
+    } else {
+        throw error // rethrow
+    }
 } finally {
     // ...
 }
@@ -786,6 +956,21 @@ finally:
 assert 1 == 1, "Default message useless"
 ```
 
+##### Ruby Errors
+
+```ruby
+begin
+    raise msg
+rescue ArgumentError, NameError
+    raise # reraise
+rescue EOFError => exception
+    raise exception
+rescue => exception
+    retry
+ensure
+    # finally
+end
+```
 ### Documentation
 
 [Learn X in Y minutes](https://learnxinyminutes.com/) has good overviews of

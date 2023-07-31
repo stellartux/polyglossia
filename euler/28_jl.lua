@@ -47,7 +47,7 @@ local function sum(...)
     return result
 end
 
--- n must be odd and greater than 1 =#
+local -- n must be odd and greater than 1 =#
 function corners(n)
     return Int(sum(Iterators.drop(range((n - 2) ^ 2, n ^ 2, 5), 1)))
 end

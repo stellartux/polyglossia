@@ -1,6 +1,5 @@
-//\
-/* Run with `cc -xc 31_c.js -o 31_c && ./31_c $N`
-// or `(deno run|node|qjs) 31_c.js $N`
+// Run with `cc -xc 31_c.js -o 31_c && ./31_c $N` \
+/* or `(deno run|node|qjs) 31_c.js $N`
 
 #include <stdio.h> // printf
 #include <stdlib.h> // atoi
