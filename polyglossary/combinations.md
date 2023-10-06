@@ -68,7 +68,7 @@ function fib(n) {
     if (n < 2) {
         return 1
     } else {
-        return fib(n - 1) + fib(n - 2) 
+        return fib(n - 1) + fib(n - 2)
     }
 }
 ```
@@ -219,6 +219,7 @@ def fib(n): #]#
 | Clojure          | `(comment`        | matching `)` | ✔️     | must parse as Clojure syntax
 | Common Lisp      | `;`               | EOL
 | Common Lisp      | `#\|`             | `\|#`        | ✔️
+| Crystal          | `#`               | EOL
 | D                | `//`              | EOL
 | D                | `/*`              | `*/`         | ❌
 | D                | `/+`              | `+/`         | ✔️
@@ -233,6 +234,8 @@ def fib(n): #]#
 | Nim              | `#`               | EOL
 | Nim              | `#[`              | `]#`         | ✔️
 | Nim              | `##[`             | `]##`        | ✔️
+| Prolog           | `%`               | EOL
+| Prolog           | `/*`              | `*/`         | ✔️
 | Python           | `#`               | EOL
 | Ruby             | `#`               | EOL
 | Ruby             | r`\n=begin\s`     | r`\n=end\s`  | ❌
@@ -252,12 +255,14 @@ def fib(n): #]#
 | C               | ✔️   | ✔️      | ❌    | ❌
 | Clojure         | ❌   | ❌      | ❌    | ✔️
 | Common Lisp     | ❌   | ❌      | ❌    | ✔️
+| Crystal         | ✔️   | ✔️      | ✔️    | ✔️
 | D               | ✔️   | ✔️      | ❌    | ❌
 | Haskell         | ✔️   | ✔️      | ✔️    | ✔️
 | JavaScript      | ✔️   | ✔️      | ❌    | ❌
 | Julia           | ✔️   | ❌      | 〰️    | 〰️      | possible in some cases by overloading implicit multiplication
 | Lua             | ✔️   | ✔️      | 〰️    | 〰️      | only for a single literal param
 | Nim             | ✔️   | ✔️      | ✔️    | ✔️      | semantic whitespace, `f(x,y)` is not `f (x,y)`
+| Prolog          | ✔️   | ❌      | ❌    | ❌
 | Python          | ✔️   | ✔️      | ❌    | ❌
 | Ruby            | ✔️   | ✔️      | ✔️    | ✔️
 | Scheme          | ❌   | ❌      | ❌    | ✔️
@@ -272,11 +277,13 @@ def fib(n): #]#
 | C               | ❌  | ✔️  | ❌     | ❌
 | Clojure         | ✔️  | ✔️  | ✔️     | ❌
 | Common Lisp     | ✔️  | ✔️  | ✔️     | ❌
+| Crystal         | ✔️  | ✔️  | ✔️     | ✔️
 | Haskell         | ❌  | ❌  | ❌     | ❌
 | JavaScript      | ✔️  | ✔️  | ❌     | ✔️
 | Julia           | ✔️  | ✔️  | ✔️     | 〰️
 | Lua             | 〰️  | ✔️  | ❌     | ✔️
 | Nim             | ✔️  | ✔️  | ✔️     | ❌
+| Prolog          | ❌  | ❌  | ❌     | ❌
 | Python          | ✔️  | ✔️  | ✔️     | ✔️
 | Ruby            | ✔️  | ✔️  | ✔️     | ✔️
 | Scheme          | ✔️  | ✔️  | ✔️     | ❌
@@ -369,6 +376,7 @@ additional keyword arguments not defined in the function signature.
 | Julia           | `println`       | `print`            | `printf`
 | Lua             | `print`         | `io.write`         | `io.write(s:format(...))`
 | Nim             | `echo`          | `stdout.write`     |
+| Prolog          | `writeln`       | `write`            | `format`
 | Python          | `print`         | `print(s, end="")` | `print(s.format(xs), end="")`
 | Ruby            | `puts`          | `print`            | `printf`
 | Scheme          |                 | `display`          |
@@ -417,12 +425,14 @@ def printf(s, *args, **kwargs):
 | C               | ❌
 | Clojure         | ✔️
 | Common Lisp     | ✔️
+| Crystal         | ✔️
 | D               | ✔️
 | Haskell         | ✔️
 | JavaScript      | ✔️
 | Julia           | ✔️
 | Lua             | ✔️
 | Nim             | ✔️
+| Prolog          | ✔️
 | Python          | ✔️
 | Ruby            | 〰️ (only if it points to Ruby)
 | Scheme          | ✔️
@@ -453,6 +463,7 @@ def printf(s, *args, **kwargs):
 | Julia           | String | Char        | Command          | Multiline string
 | Lua             | String | String
 | Nim             | String | Char        | Infix to prefix  | Multiline string
+| Prolog          | String/Symbol | Symbol      | String (List of codes)
 | Python          | String | String      |                  | `"a"`
 | Ruby            | String | String      |                  | `"a"`
 | Scheme          | String | Symbol `a'` | Symbol           | `"" "a" ""`
@@ -486,6 +497,7 @@ make it an identifier in Ruby but the same word in any other language.
 | Lua               | 〰️ | `---`       | Before
 | Nim               | ✔️ | `##`        | After    |                                     | `nim doc $FILENAME` in shell to generate docs
 | Nim               | ✔️ | `##[` `]##` | After
+| [Prolog][pl-doc]  | ✔️ | `%!`        | Before
 | Python            | ✔️ | String      | After    | `fn.__doc__`
 | [Ruby][rb-doc]    | ✔️ | `#`         | Before
 | Scheme            | ✔️ | String      | After    | `describe`, `procedure-documentation` |                 | Chicken Scheme has an [`apropos` egg].
@@ -505,7 +517,8 @@ make it an identifier in Ruby but the same word in any other language.
 [`documentation`]: (http://www.lispworks.com/documentation/HyperSpec/Body/f_docume.htm#documentation)
 [`find-doc`]: https://clojuredocs.org/clojure.repl/find-doc
 [hs-doc]: https://haskell-haddock.readthedocs.io/en/latest/markup.html#documentation-and-markup
-[jl-doc]: (https://docs.julialang.org/en/v1/manual/documentation/#man-documentation)
+[jl-doc]: https://docs.julialang.org/en/v1/manual/documentation/#man-documentation
+[pl-doc]: https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pldoc.html%27)
 [rb-doc]: (https://ruby-doc.org/3.2.1/RDoc/MarkupReference.html#class-RDoc::MarkupReference-label-Markup+in+Comments)
 
 #### REPL Support
@@ -514,11 +527,13 @@ make it an identifier in Ruby but the same word in any other language.
 | ----------------- | --------- | -------- | --------------------------- | ---
 | Clojure           |  ✔️       |          | `clj`
 | Common Lisp       |  ✔️       |  ✔️      | `sbcl`
+| Crystal           |  ✔️       |          | `crystal i`
 | Haskell           |  ✔️       |          | `ghci`
 | JavaScript        |  ✔️       |  〰️      | `node`, `deno repl`, `qjs`  | `debugger`
 | Julia             |  ✔️       |          | `julia`
 | Lua               |           |  〰️      | `lua`                       | `debug.debug()`
 | Nim               |           |          | `nim secret`
+| Prolog            |  ✔️       |  ✔️      | `swipl`
 | Python            |  ✔️       |          | `python`
 | Ruby              |  ✔️       |          | `irb`
 | Scheme            |           |  ✔️      | `guile`
@@ -535,12 +550,14 @@ make it an identifier in Ruby but the same word in any other language.
 | C               | `-a` | `a / b`                |                | `a % b`           | `a ** b`
 | Clojure         | `-a` | `(div a b)`            | `(mod a b)`    | `(rem a b)`       | `(Math/pow a b)`
 | Common Lisp     | `-a` | `(floor a b)`          | `(mod a b)`    | `(rem a b)`       | `(expt a b)`
+| Crystal         | `-a` | `a // b`               | `a % b`        | `a.remainder(b)`  | `a ** b`
 | D               | `-a` | `a / b`                |                | `a % b`           | `a ** b`
 | Haskell         | `-a` | `div a b`              | `mod a b`      | `rem a b`         | `a ** b`
 | JavaScript      | `-a` | `a / b \| 0`           |                | `a % b`           | `a ** b`
 | Julia           | `-a` | `a ÷ b`                | `mod(a, b)`    | `a % b`           | `a ^ b`
 | Lua             | `-a` | `a // b`               | `a % b`        |                   | `a ^ b`
 | Nim             | `-a` | `a div b`              |                | `a mod b`
+| Prolog          | `-a` | `a // b`, `a div b`    | `a mod b`      | `a rem b`         | `a ^ b`
 | Python          | `-a` | `a // b`               | `a % b`        |                   | `a ** b`
 | Ruby            | `-a` | `a.div(b)`             | `a % b`        | `a.remainder(b)`  | `a ** b`
 | Scheme          | `-a` | `(floor-quotient a b)` | `(modulo a b)` | `(remainder a b)` | `(expt a b)`
@@ -548,6 +565,21 @@ make it an identifier in Ruby but the same word in any other language.
 | Standard ML     | `~a` | `a div b`              | `a mod b`
 
 Defining modulo and remainder so that `-5 modulo 3 == 1` and `-5 remainder 3 == -2`.
+
+###### Awk / JavaScript Modulo
+
+```javascript
+function mod(a, b) {
+    return (a % b + b) % b
+}
+```
+
+###### Python Remainder
+
+```python
+def rem(a, b):
+    return a % b - (b if a < 0 else 0)
+```
 
 ##### Concatenation Operators
 
@@ -585,6 +617,21 @@ function concat(a, ...)
 end
 ```
 
+##### Array Indexing
+
+| Language        | First | Negative Indices | Last                  | Notes
+| --------------- | ----- | ---------------- | --------------------- | ------------
+| Awk             |     1 | Hash Key         | `xs[length(xs)-1]`
+| C               |     0 | Out of bounds    | Static arrays
+| Crystal         |     0 | Index from end   | `xs.last`, `xs[-1]`
+| D               |     0 | Out of bounds    | Static arrays
+| JavaScript      |     0 | Hash Key         | `xs[xs.length-1]`
+| Julia           |     1 | Out of bounds    | `last(xs)`, `xs[end]`
+| Lua             |     1 | Hash Key         | `xs[#xs]`
+| Prolog          |   0/1 | Out of bounds    | `last(Xs, X)`         | `nth0(N, Xs, X)` or `nth1(N, Xs, X)`
+| Python          |     0 | Index from end   | `xs[-1]`
+| Ruby            |     0 | Index from end   | `xs.last`, `xs[-1]`
+
 ##### Comparison Operators
 
 | Language\Op     | equal            | not equal         | strict equal | strict not equal
@@ -597,6 +644,8 @@ end
 | Julia           | `a == b`         | `a != b`, `a ≠ b` | `a === b`    | `a !== b`
 | Lua             | `a == b`         | `a ~= b`
 | Nim             | `a == b`         | `a != b`
+| Prolog          | `a = b`          | `a \= b`
+| Prolog CLP(FD)  | `a #= b`         | `a #\= b`, `dif(a, b)`
 | Python          | `a == b`         | `a != b`
 | Ruby            | `a == b`         | `a != b`          | `a === b`    | `a !== b`
 | Shell           | `expr $a -eq $b` | `expr $a -neq $b`
@@ -618,6 +667,8 @@ end
 | Julia           | `a && b`            | `a \|\| b`           | `!a`
 | Lua             | `a and b`           | `a or b`             | `not a`
 | Nim             | `a and b`           | `a or b`             | `not a`
+| Prolog          | `a, b`              | `a; b`, `a | b`      | `\+ a`
+| Prolog CLP(B)   | `a #/\ b`           | `a #\/ b`            | `#\ a`
 | Python          | `a and b`           | `a or b`             | `not a`
 | Ruby            | `a && b`, `a and b` | `a \|\| b`, `a or b` | `!a`
 | Scheme          | `(and a b)`         | `(or a b)`           | `(not a)`
@@ -631,12 +682,14 @@ end
 | C               | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Clojure         | `(bit-and a b)`   | `(bit-or a b)`    | `(bit-xor a b)`      | `(bit-not a)`
 | Common Lisp     | `(logand a b)`    | `(logior a b)`    | `(logxor a b)`       | `(lognot a)`
+| Crystal         | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | D               | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Haskell         | `a .&. b`         | `a .\|. b`        | `xor a b`            | `complement a` | `import Data.Bits`
 | JavaScript      | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Julia           | `a & b`           | `a \| b`          | `a ⊻ b`, `xor(a, b)` | `~a`
 | Lua             | `a & b`           | `a \| b`          | `a ~ b`              | `~a`
 | Nim             | `a and b`         | `a or b`          | `a xor b`            | `not a`
+| Prolog          | `a /\ b`          | `a \/ b`          | `a xor b`            | `\ a`
 | Python          | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Ruby            | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Scheme          | `(logand a b)`    | `(logior a b)`    | `(logxor a b)`       | `(lognot a)`
@@ -649,11 +702,13 @@ end
 | C               | `a << b`               |                         | `a >> b`
 | Clojure         | `(bit-shift-left a b)` | `(bit-shift-right a b)` | `(unsigned-bit-shift-right a b)`
 | Common Lisp     | `(ash a b)`            | `(ash a (- b))`
+| Crystal         | `a << b`               | `a >> b`
 | Haskell         | `shift a b`            | `shift a (-b)`
 | JavaScript      | `a << b`               | `a >> b`                | `a >>> b`
 | Julia           | `a << b`               | `a >> b`                | `a >>> b`
 | Lua             | `a << b`               |                         | `a >> b`
 | Nim             | `a shl b`              | `a shr b`, `ashr(a, b)`
+| Prolog          | `a << b`               | `a >> b`
 | Python          | `a << b`               | `a >> b`
 | Ruby            | `a << b`               | `a >> b`
 | Scheme          | `(ash a b)`            | `(ash a (- b))`
@@ -678,7 +733,7 @@ def shr(a, b: int):
     return (a >> b) & 0x7fffffffffffffff
 ```
 
-###### Ruby Bitshift
+###### Crystal & Ruby Bitshift
 
 ```ruby
 ##
@@ -702,12 +757,13 @@ unless otherwise stated.
 | C               | `T x;`          | `const T x = y;`   | `#define x y`
 | Clojure         | `(let [x y])`   |
 | Common Lisp     | `(defvar x)`    |
-| D               |
+| Crystal         | `x`             | `X`
 | Haskell         |                 | `let x = y`
 | JavaScript      | `let x`         | `const x = y`      |                | `x`, `var x`
 | Julia           | `x`, `local x`  | `const x = y`
 | Lua             | `x`, `local x`  | `local x <const> = y`
 | Nim             | `var x: T`      | `let x = y`        | `const x = y`
+| Prolog          | `X`
 | Python          | `x`
 | Ruby            | `x`
 | Scheme          | `(let (x y))`
@@ -971,6 +1027,29 @@ ensure
     # finally
 end
 ```
+
+#### Systems of Reuse
+
+Languages have different methods of reusing generic methods defined on a type
+hierarchy or prototype chain.
+
+The most commonly encountered system is a class based single inheritance model.
+With this model, each object is defined as a *class* which can *inherit*
+features from a *parent* or *super* class.
+
+##### JavaScript Classes and Prototypes
+
+In early versions, JavaScript used a prototype chain for inheritance. When ES6
+was released, a `class` keyword was added, which mimics the more commonly known
+style of class based inheritance, but still uses the original prototype system
+under the hood.
+
+This makes it easy to write code in the class based style
+
+##### Julia Structs and Multiple Dispatch
+
+##### Lua Tables and Metatables
+
 ### Documentation
 
 [Learn X in Y minutes](https://learnxinyminutes.com/) has good overviews of
@@ -993,6 +1072,11 @@ syntax and basic idioms of all of the languages listed.
 
 - [Common Lisp HyperSpec](http://www.lispworks.com/documentation/HyperSpec/Front/index.htm)
 - [Common Lisp Quick Reference](http://clqr.boundp.org/)
+
+#### Crystal Reference
+
+- [Crystal Reference](https://crystal-lang.org/reference)
+- [Crystal Standard Library](https://crystal-lang.org/api)
 
 #### D Reference
 
@@ -1024,6 +1108,10 @@ syntax and basic idioms of all of the languages listed.
 
 - [Nim Manual](https://nim-lang.org/docs/manual.html)
 - [Nim by Example](https://nim-by-example.github.io/)
+
+#### Prolog Reference
+
+- [SWI-Prolog Summary](https://www.swi-prolog.org/pldoc/man?section=summary)
 
 #### Python Reference
 

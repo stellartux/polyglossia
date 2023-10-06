@@ -1,4 +1,6 @@
-local Jl = setmetatable({}, { __name = "Jl" })
+local Jl = setmetatable({
+    Primes = {}
+}, { __name = "Jl" })
 
 function Jl.all(fn, ...)
     for k, v in ... do
@@ -71,6 +73,21 @@ function Jl.get(t, k, v)
 end
 
 ---@param x number
+function Jl.Primes.isprime(x)
+    if x == 1 then
+        return false
+    elseif x == 2 then
+        return true
+    elseif x % 2 == 0 then
+        return false
+    end
+    for i = 3, math.sqrt(x), 2 do
+        if x % i == 0 then return false end
+    end
+    return true
+end
+
+---@param x number
 function Jl.isqrt(x)
     return math.floor(math.sqrt(x))
 end
@@ -95,6 +112,12 @@ function Jl.map(fn, i, t, k)
 end
 
 Jl.println = print
+
+function Jl.prod(...)
+    local result = 1
+    for k, v in ... do result = result * (v or k) end
+    return result
+end
 
 function Jl.sum(...)
     local result = 0
