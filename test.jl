@@ -52,6 +52,8 @@ function tocmd(file)
             push!(cmds, `lua $(file) $(inputfile)`)
         elseif lang == "nims"
             push!(cmds, `nim run $(file) $(inputfile)`)
+        elseif lang == "pl"
+            push!(cmds, `swipl $(file) $(inputfile)`)
         elseif lang == "py"
             push!(cmds, `python3 $(file) $(inputfile)`)
         elseif lang == "rb"
