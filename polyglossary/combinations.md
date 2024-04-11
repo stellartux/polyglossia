@@ -497,7 +497,7 @@ make it an identifier in Ruby but the same word in any other language.
 | Lua               | 〰️ | `---`       | Before
 | Nim               | ✔️ | `##`        | After    |                                     | `nim doc $FILENAME` in shell to generate docs
 | Nim               | ✔️ | `##[` `]##` | After
-| [Prolog][pl-doc]  | ✔️ | `%!`        | Before
+| [Prolog][pl-doc]  | ✔️ | `%!`        | Before   | [`help/1`]        | [`apropos/1`]
 | Python            | ✔️ | String      | After    | `fn.__doc__`
 | [Ruby][rb-doc]    | ✔️ | `#`         | Before
 | Scheme            | ✔️ | String      | After    | `describe`, `procedure-documentation` |                 | Chicken Scheme has an [`apropos` egg].
@@ -512,10 +512,12 @@ make it an identifier in Ruby but the same word in any other language.
 
 [`apropos`]: http://www.lispworks.com/documentation/HyperSpec/Body/f_apropo.htm
 [`apropos` egg]: http://wiki.call-cc.org/eggref/5/apropos
+[`apropos/1`]: https://www.swi-prolog.org/pldoc/man?section=online-help#apropos/1
 [d-doc]: https://dlang.org/spec/ddoc.html
 [`doc`]: https://clojuredocs.org/clojure.repl/find-doc
 [`documentation`]: (http://www.lispworks.com/documentation/HyperSpec/Body/f_docume.htm#documentation)
 [`find-doc`]: https://clojuredocs.org/clojure.repl/find-doc
+[`help/1`]: https://www.swi-prolog.org/pldoc/man?section=online-help#help/1
 [hs-doc]: https://haskell-haddock.readthedocs.io/en/latest/markup.html#documentation-and-markup
 [jl-doc]: https://docs.julialang.org/en/v1/manual/documentation/#man-documentation
 [pl-doc]: https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/pldoc.html%27)
@@ -608,7 +610,7 @@ def rem(a, b):
 ---@param ... T[]
 ---@return T[]
 function concat(a, ...)
-    a = table.pack(table.unpack(a))
+    a = { table.unpack(a) }
     for i = 1, select("#", ...) do
         local b = select(i, ...)
         table.move(b, 1, #b, #a + 1, a)
@@ -801,7 +803,7 @@ introduced in ES6, which have block scoping.
 
 ###### Scoping: Julia
 
-Julia's has [global and local lexical scoping](https://docs.julialang.org/en/v1/manual/variables-and-scoping/#scope-of-variables). Global scoping works different
+Julia has [global and local lexical scoping](https://docs.julialang.org/en/v1/manual/variables-and-scoping/#scope-of-variables). Global scoping works differently
 from other languages, in that declaring a module introduces a new global scope.
 
 The top-level global scope is actually the scope of the Main module, all other
@@ -1050,6 +1052,59 @@ This makes it easy to write code in the class based style
 
 ##### Lua Tables and Metatables
 
+#### Profiling
+
+##### Profiling: Julia
+
+The macro `@time` is used to print the time taken for an expression to evaluate.
+`@timev` prints more detailed information, `@timed` returns a named tuple with
+the same information as `@timev`.
+
+```
+julia> fib(x) = x < 2 ? 1 : fib(x-1) + fib(x-2)
+fib (generic function with 1 method)
+
+julia> @time fib(30)
+  0.005162 seconds
+1346269
+
+julia> @timev fib(30)
+  0.005930 seconds
+elapsed time (ns):  5930205
+gc time (ns):       0
+bytes allocated:    0
+pool allocs:        0
+non-pool GC allocs: 0
+minor collections:  0
+full collections:   0
+1346269
+
+julia> @timed fib(30)
+(value = 1346269, time = 0.007914938, bytes = 0, gctime = 0.0, gcstats = Base.GC_Diff(0, 0, 0, 0, 0, 0, 0, 0, 0))
+```
+
+##### Profiling: Prolog
+
+There are no ISO Prolog predicates for profiling. SWI-Prolog provides
+[`library(statistics)`](https://www.swi-prolog.org/pldoc/man?section=statistics). The predicate `time/1` prints the run time of the given goal. See also [`library(prolog_profile)`](https://eu.swi-prolog.org/pldoc/man?section=profile),
+which includes `profile/1`, which runs an external profiler GUI.
+
+```prolog
+?- [user].
+|: fib(0, 1) :- !.
+|: fib(1, 1) :- !.
+|: fib(N, R) :- succ(M, N), succ(L, M), fib(L, P), fib(M, Q), R is P + Q.
+|: ^D% user://1 compiled 0.01 sec, 3 clauses
+true.
+
+?- time(fib(30, R)).
+% 6,731,343 inferences, 0.441 CPU in 0.442 seconds (100% CPU, 15252592 Lips)
+R = 1346269.
+
+?- profile(fib(30, R)).
+R = 1346269. % opens external profiler with run time information
+```
+
 ### Documentation
 
 [Learn X in Y minutes](https://learnxinyminutes.com/) has good overviews of
@@ -1111,6 +1166,7 @@ syntax and basic idioms of all of the languages listed.
 
 #### Prolog Reference
 
+- [ISO Prolog Built-In Predicates (bips)](https://www.deransart.fr//prolog/bips.html)
 - [SWI-Prolog Summary](https://www.swi-prolog.org/pldoc/man?section=summary)
 
 #### Python Reference

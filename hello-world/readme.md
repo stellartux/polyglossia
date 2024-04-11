@@ -7,7 +7,7 @@ point for unifying output between the languages.
 
 ## Colour Scheme
 
-All the colour code escape sequences in once place.
+All the colour code escape sequences in one place.
 
 | Language    | Colourised
 | -           | -
@@ -21,6 +21,7 @@ All the colour code escape sequences in once place.
 | Julia       | \x1b[35mJulia\x1b[m
 | Lua         | \x1b[94mLua\x1b[m
 | Nim         | \x1b[93mNim\x1b[m
+| Prolog      | \x1b[38:5:202mProlog\x1b[m
 | Python      | \x1b[96mPython\x1b[m
 | Ruby        | \x1b[91mRuby\x1b[m
 | Scheme      | \x1b[31mScheme\x1b[m
