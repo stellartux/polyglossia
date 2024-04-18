@@ -1,11 +1,12 @@
 # Viable Language Combinations
 
----- | awk | c | clj | lisp | d | hs | js | jl | lua | nim | py | rb | scm | sh
----- | --- | - | --- | ---- | - | -- | -- | -- | --- | --- | -- | -- | --- | --
-sml  | 〰️  |   | 〰️  |  〰️  |   | ✔️ |    | 〰️ | 〰️  | 〰️  | 〰️ | 〰️ |  〰️ | 〰️
-sh   | ❌  |〰️ |     |  〰️  |   | 〰️ |    | ❌ | 〰️  | 〰️  | ❌ | 〰️ |  〰️ | 🟰
-scm  |     |〰️ | ✔️  |  ✔️  |   | ✔️ | 〰️ | 〰️ | 〰️  | 〰️  | 〰️ | 〰️ |  🟰  |
-rb   | 〰️  |✔️ |     |  〰️  |   | 〰️ | 〰️ | ✔️ | 〰️  | 〰️  | ✔️ | 🟰  |
+---- | awk | c | clj | lisp | d | hs | js | jl | lua | nim | py | pl | rb | scm | sh
+---- | --- | - | --- | ---- | - | -- | -- | -- | --- | --- | -- | -- | -- | --- | --
+sml  | 〰️  |   | 〰️  |  〰️  |   | ✔️ |    | 〰️ | 〰️  | 〰️  | 〰️ |    | 〰️ |  〰️ | 〰️
+sh   | ❌  |〰️ |     |  〰️  |   | 〰️ |    | ❌ | 〰️  | 〰️  | ❌ |    | 〰️ |  〰️ | 🟰
+scm  |     |〰️ | ✔️  |  ✔️  |   | ✔️ | 〰️ | 〰️ | 〰️  | 〰️  | 〰️ |    | 〰️ |  🟰  |
+rb   | 〰️  |✔️ |     |  〰️  |   | 〰️ | 〰️ | ✔️ | 〰️  | 〰️  | ✔️ |    | 🟰  |
+pl   |     |   |     |      |   |    | 〰️ |    |     |     |    | 🟰  |
 py   | 〰️  |〰️ |     |  〰️  |   | 〰️ | 〰️ | ✔️ | 〰️  | ✨  | 🟰  |
 nim  | 〰️  |〰️ |     |  〰️  |   | 〰️ |    | ✔️ | 〰️  |  🟰  |
 lua  | 〰️  |   |     |  〰️  |   | ✔️ | 〰️ | ✨ |  🟰  |
@@ -175,6 +176,10 @@ function fib(n)
 end
 ```
 
+This handy map will guide you between Julia and Lua code.
+
+![Graphviz digraph of Julia/Lua polyglot code](jllua.png)
+
 ### Julia and Ruby
 
 `#=` starts a single line comment in Ruby and a multiline comment in Julia.
@@ -205,6 +210,8 @@ def fib(n): #]#
         return fib(n - 1) + fib(n - 2)
 ```
 
+## Language Feature Comparison
+
 ### Comment Syntax Comparison
 
 | Language\Comment | Begin             | End          | Nested | Notes
@@ -220,9 +227,6 @@ def fib(n): #]#
 | Common Lisp      | `;`               | EOL
 | Common Lisp      | `#\|`             | `\|#`        | ✔️
 | Crystal          | `#`               | EOL
-| D                | `//`              | EOL
-| D                | `/*`              | `*/`         | ❌
-| D                | `/+`              | `+/`         | ✔️
 | Haskell          | `--`              | EOL
 | Haskell          | `{-`              | `-}`         | ✔️
 | JavaScript       | `//`              | EOL          |        | EOL includes `\x2028` and `\x2029`
@@ -256,7 +260,6 @@ def fib(n): #]#
 | Clojure         | ❌   | ❌      | ❌    | ✔️
 | Common Lisp     | ❌   | ❌      | ❌    | ✔️
 | Crystal         | ✔️   | ✔️      | ✔️    | ✔️
-| D               | ✔️   | ✔️      | ❌    | ❌
 | Haskell         | ✔️   | ✔️      | ✔️    | ✔️
 | JavaScript      | ✔️   | ✔️      | ❌    | ❌
 | Julia           | ✔️   | ❌      | 〰️    | 〰️      | possible in some cases by overloading implicit multiplication
@@ -294,7 +297,7 @@ def fib(n): #]#
 - Kwargs: Keyword arguments
 - Undercall: Functions can be called with fewer params than declared
 
-##### JavaScript: Arguments
+#### JavaScript: Arguments
 
 ```js
 /**
@@ -309,7 +312,7 @@ function f(x, y = 0, ...zs) {
 }
 ```
 
-##### Julia: Arguments
+#### Julia: Arguments
 
 ```julia
 function f(x, y::Integer=0, zs...; kwarg=true, kwargs...)
@@ -321,7 +324,7 @@ end
 
 Positional arguments and keyword arguments are seperated by a semicolon.
 
-##### Lua: Arguments
+#### Lua: Arguments
 
 ```lua
 ---@param x any required
@@ -350,7 +353,7 @@ function outer(...)
 end
 ```
 
-##### Python: Arguments
+#### Python: Arguments
 
 ```python
 def f(x, y: int = 0, *zs, **kwargs):
@@ -370,7 +373,6 @@ additional keyword arguments not defined in the function signature.
 | C               | `puts`          |                    | `printf`
 | Clojure         | `println`       | `print`            | `printf`
 | Common Lisp     |                 | `princ`            |
-| D               | `writeLn`       | `write`            | `writef`
 | Haskell         | `putStrLn`      | `putStr`           |
 | JavaScript      | `console.log`   |                    |
 | Julia           | `println`       | `print`            | `printf`
@@ -426,7 +428,6 @@ def printf(s, *args, **kwargs):
 | Clojure         | ✔️
 | Common Lisp     | ✔️
 | Crystal         | ✔️
-| D               | ✔️
 | Haskell         | ✔️
 | JavaScript      | ✔️
 | Julia           | ✔️
@@ -443,7 +444,6 @@ def printf(s, *args, **kwargs):
 
 | Language        | Restriction
 | ----------------| -----------
-| D               | Filename must end in `.d`
 | Lua             | Filename must end in `.lua` if imported as a module
 | Nim             | Basename without extension cannot have `.`
 | Python          | Filename must end in `.py` if imported as a package
@@ -457,7 +457,6 @@ def printf(s, *args, **kwargs):
 | C               | String | Char        |                  | `"a"`
 | Clojure         | String |
 | Common Lisp     | String |
-| D               | String | Char        |                  | TODO
 | Haskell         | String | Char        | Prefix to infix  |
 | JavaScript      | String | String      | Multiline string |
 | Julia           | String | Char        | Command          | Multiline string
@@ -486,9 +485,6 @@ make it an identifier in Ruby but the same word in any other language.
 | C                 | 〰️ | `/**` `*/`  | Before
 | Clojure           | ✔️ | String      | After    | [`doc`]           | [`find-doc`]
 | Common Lisp       | ✔️ | String      | After    | [`documentation`] | [`apropos`]
-| [D][d-doc]        | ✔️ | `///`       | After
-| [D][d-doc]        | ✔️ | `/**` `*/`  | Before
-| [D][d-doc]        | ✔️ | `/++` `+/`  | Before
 | [Haskell][hs-doc] | 〰️ | `-- \|`     | Before   |                   |                 | At the REPL, `:type fn` `:info sym` `:kind type` or `:browse module`
 | [Haskell][hs-doc] | 〰️ | `-- ^`      | After
 | [Haskell][hs-doc] | 〰️ | `{-\|` `-}` | Before
@@ -504,6 +500,23 @@ make it an identifier in Ruby but the same word in any other language.
 | Shell             | 〰️ | `# .DOCUMENTS fn` `# .ENDOC` | Anywhere
 | Standard ML       | ❌ |
 
+Position = before
+
+```julia
+"Returns the argument"
+function identity(x)
+    return x
+end
+```
+
+Position = after
+
+```python
+def identity(x):
+    "Returns the argument"
+    return x
+```
+
 #### Docstring Table Key
 
 - ✔️ Official language feature
@@ -513,7 +526,6 @@ make it an identifier in Ruby but the same word in any other language.
 [`apropos`]: http://www.lispworks.com/documentation/HyperSpec/Body/f_apropo.htm
 [`apropos` egg]: http://wiki.call-cc.org/eggref/5/apropos
 [`apropos/1`]: https://www.swi-prolog.org/pldoc/man?section=online-help#apropos/1
-[d-doc]: https://dlang.org/spec/ddoc.html
 [`doc`]: https://clojuredocs.org/clojure.repl/find-doc
 [`documentation`]: (http://www.lispworks.com/documentation/HyperSpec/Body/f_docume.htm#documentation)
 [`find-doc`]: https://clojuredocs.org/clojure.repl/find-doc
@@ -542,33 +554,73 @@ make it an identifier in Ruby but the same word in any other language.
 | Shell             |  ✔️       |          | `sh`
 | Standard ML       |           |          | `smlnj`, `sosml`
 
-#### Operators
+### Operators
 
-##### Arithmetic Operators
+#### Arithmetic Operators
 
-| Language\Op     | neg  | floor division         | modulo         | remainder         | exponent
-| --------------- | ---- | ---------------------- | -------------- | ----------------- | ----
-| Awk             | `-a` | `int(a / b)`           |                | `a % b`           | `a ** b` `a ^ b`
-| C               | `-a` | `a / b`                |                | `a % b`           | `a ** b`
-| Clojure         | `-a` | `(div a b)`            | `(mod a b)`    | `(rem a b)`       | `(Math/pow a b)`
-| Common Lisp     | `-a` | `(floor a b)`          | `(mod a b)`    | `(rem a b)`       | `(expt a b)`
-| Crystal         | `-a` | `a // b`               | `a % b`        | `a.remainder(b)`  | `a ** b`
-| D               | `-a` | `a / b`                |                | `a % b`           | `a ** b`
-| Haskell         | `-a` | `div a b`              | `mod a b`      | `rem a b`         | `a ** b`
-| JavaScript      | `-a` | `a / b \| 0`           |                | `a % b`           | `a ** b`
-| Julia           | `-a` | `a ÷ b`                | `mod(a, b)`    | `a % b`           | `a ^ b`
-| Lua             | `-a` | `a // b`               | `a % b`        |                   | `a ^ b`
-| Nim             | `-a` | `a div b`              |                | `a mod b`
-| Prolog          | `-a` | `a // b`, `a div b`    | `a mod b`      | `a rem b`         | `a ^ b`
-| Python          | `-a` | `a // b`               | `a % b`        |                   | `a ** b`
-| Ruby            | `-a` | `a.div(b)`             | `a % b`        | `a.remainder(b)`  | `a ** b`
-| Scheme          | `-a` | `(floor-quotient a b)` | `(modulo a b)` | `(remainder a b)` | `(expt a b)`
-| Shell           | `-a` | `expr $a / $b`         |                | `expr $a % $b`
-| Standard ML     | `~a` | `a div b`              | `a mod b`
+##### Unary Negation
 
-Defining modulo and remainder so that `-5 modulo 3 == 1` and `-5 remainder 3 == -2`.
+| Language         | Unary negation
+| ---------------- | --------------
+| Normal languages | `-a`
+| sTaNdArD mL      | `~a`
 
-###### Awk / JavaScript Modulo
+##### Exponentiation
+
+| Language\Op     | exponent
+| --------------- | ----
+| Awk             | `a ** b` `a ^ b`
+| C               | `a ** b`
+| Clojure         | `(Math/pow a b)`
+| Common Lisp     | `(expt a b)`
+| Crystal         | `a ** b`
+| Haskell         | `a ** b`
+| JavaScript      | `a ** b`
+| Julia           | `a ^ b`
+| Lua             | `a ^ b`
+| Nim             |
+| Prolog          | `a ^ b`
+| Python          | `a ** b`
+| Ruby            | `a ** b`
+| Scheme          | `(expt a b)`
+| Shell           |
+| Standard ML     |
+
+##### Integer Division
+
+| Language\Op     | floor divide to zero              | remainder             | combined divrem | floor divide to -Inf    | modulo                                 | combined divmod      |
+| --------------- | --------------------------------- | --------------------- | --------------- | ----------------------- | -------------------------------------- | -------------------- |
+| Awk             | `int(a / b)`                      | `a % b`               |                 |                         |                                        |                      |
+| C               | `a / b`                           | `a % b`               |                 |                         |                                        |                      |
+| Clojure         | `(quot a b)`                      | `(rem a b)`           |                 |                         | `(mod a b)`                            |                      |
+| Common Lisp     | `(floor a b)`                     | `(rem a b)`           | `(floor a b)`   |  `(truncate a b)`       | `(mod a b)`                            | `(truncate a b)`     |
+| Crystal         | `a.tdiv(b)`                       | `a.remainder(b)`      |                 | `a // b`                | `a % b` `a.modulo(b)`                  |                      |
+| Haskell         | `quot a b`                        | `rem a b`             | `quotRem a b`   | `div a b`               | `mod a b`                              | `divMod a b`         |
+| JavaScript      | `a / b \| 0`, `Math.floor(a / b)` | `a % b`               |                 | `Math.trunc(a / b)`     |                                        |                      |
+| Julia           | `a ÷ b`, `div(a, b)`              | `a % b`, `rem(-5, 3)` | `divrem(a, b)`  | `fld(a, b)`             | `mod(a, b)`                            | `fldmod(a, b)`       |
+| Lua             |                                   |                       |                 | `a // b`                | `a % b`                                |                      |
+| Nim             | `a div b`                         | `a mod b`             |                 |                         |                                        |                      |
+| Prolog          | `a // b`                          | `a rem b`             |                 | `a div b`               | `a mod b`                              | `divmod(A, B, Q, R)` |
+| Python          |                                   |                       |                 | `a // b`                | `a % b`                                | `divmod(a, b)`       |
+| Ruby            |  `(a/b).floor`                    | `a.remainder(b)`      |                 | `a / b` `a.div(b)`      | `a % b`                                | `a.divmod(b)`        |
+| Scheme          | `(quotient a b)`                  | `(remainder a b)`     |                 | `(floor-quotient a b)`  | `(floor-remainder a b)` `(modulo a b)` | `(floor/ a b)`       |
+| Shell           | `expr $a / $b`                    | `expr $a % $b`        |                 |                         |                                        |                      |
+| Standard ML     |                                   |                       |                 |  `a div b`              | `a mod b`                              |                      |
+
+- Floor divide to zero `-5 / 3 == -1`
+- Remainder `-5 remainder 3 == -2`
+
+- Floor divide to -Inf `-5 / 3 == -2`
+- Modulo `-5 modulo 3 == 1`
+
+- For all `(n) -> (x) -> (x / n) * n + x % n == x` holds if:
+  - `/` is floor division to zero, `%` is remainder
+  - `/` is floor division to negative infinity, `%` is modulo
+
+- Some languages provided paired `divrem`, `divmod` functions, which make it
+  easier to use the correct variants, and in some cases are more efficient.
+
+##### Awk / JavaScript Modulo
 
 ```javascript
 function mod(a, b) {
@@ -576,14 +628,14 @@ function mod(a, b) {
 }
 ```
 
-###### Python Remainder
+##### Python Remainder
 
 ```python
 def rem(a, b):
     return a % b - (b if a < 0 else 0)
 ```
 
-##### Concatenation Operators
+#### Concatenation Operators
 
 | Language\Op     | strings  | arrays          | numbers
 | --------------- | -------- | --------------- | -------
@@ -601,7 +653,7 @@ def rem(a, b):
 | Shell           | `"$a$b"`
 | Standard ML     | `a ^ b`  | `a ^ b`
 
-###### Lua List Concat
+##### Lua List Concat
 
 ```lua
 --- Concatenate the given lists into a new list.
@@ -619,14 +671,13 @@ function concat(a, ...)
 end
 ```
 
-##### Array Indexing
+#### Array Indexing
 
 | Language        | First | Negative Indices | Last                  | Notes
 | --------------- | ----- | ---------------- | --------------------- | ------------
 | Awk             |     1 | Hash Key         | `xs[length(xs)-1]`
 | C               |     0 | Out of bounds    | Static arrays
 | Crystal         |     0 | Index from end   | `xs.last`, `xs[-1]`
-| D               |     0 | Out of bounds    | Static arrays
 | JavaScript      |     0 | Hash Key         | `xs[xs.length-1]`
 | Julia           |     1 | Out of bounds    | `last(xs)`, `xs[end]`
 | Lua             |     1 | Hash Key         | `xs[#xs]`
@@ -634,13 +685,12 @@ end
 | Python          |     0 | Index from end   | `xs[-1]`
 | Ruby            |     0 | Index from end   | `xs.last`, `xs[-1]`
 
-##### Comparison Operators
+#### Comparison Operators
 
 | Language\Op     | equal            | not equal         | strict equal | strict not equal
 | --------------- | ---------------- | ----------------- | ------------ | ----------------
 | Awk             | `a == b`         | `a != b`
 | C               | `a == b`         | `a != b`          | `a === b`    | `a !== b`
-| D               | `a == b`         | `a != b`          | `a === b`    | `a !== b`
 | Haskell         | `a == b`         | `a /= b`
 | JavaScript      | `a == b`         | `a != b`          | `a === b`    | `a !== b`
 | Julia           | `a == b`         | `a != b`, `a ≠ b` | `a === b`    | `a !== b`
@@ -655,7 +705,7 @@ end
 
 - [Scheme Equality](https://www.gnu.org/software/guile/manual/html_node/Equality.html)
 
-##### Logical Operators
+#### Logical Operators
 
 | Language\Op     | and                 | or                   | not
 | --------------- | ------------------- | -------------------- | ---
@@ -663,7 +713,6 @@ end
 | C               | `a && b`            | `a \|\| b`           | `!a`
 | Clojure         | `(and a b)`         | `(or a b)`           | `(not a)`
 | Common Lisp     | `(and a b)`         | `(or a b)`           | `(not a)`
-| D               | `a && b`            | `a \|\| b`           | `!a`
 | Haskell         | `a && b`            | `a \|\| b`           | `not a`
 | JavaScript      | `a && b`            | `a \|\| b`           | `!a`
 | Julia           | `a && b`            | `a \|\| b`           | `!a`
@@ -677,7 +726,7 @@ end
 | Shell           | `a && b`            | `a \|\| b`           | `!a`
 | Standard ML     | `a andalso b`       | `a orelse b`         | `not a`
 
-##### Bitwise Operators
+#### Bitwise Operators
 
 | Language\Op     | and               | or                | xor                  | not            | notes
 | --------------- | ----------------- | ----------------- | -------------------- | -------------- | -----
@@ -685,7 +734,6 @@ end
 | Clojure         | `(bit-and a b)`   | `(bit-or a b)`    | `(bit-xor a b)`      | `(bit-not a)`
 | Common Lisp     | `(logand a b)`    | `(logior a b)`    | `(logxor a b)`       | `(lognot a)`
 | Crystal         | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
-| D               | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Haskell         | `a .&. b`         | `a .\|. b`        | `xor a b`            | `complement a` | `import Data.Bits`
 | JavaScript      | `a & b`           | `a \| b`          | `a ^ b`              | `~a`
 | Julia           | `a & b`           | `a \| b`          | `a ⊻ b`, `xor(a, b)` | `~a`
@@ -697,7 +745,7 @@ end
 | Scheme          | `(logand a b)`    | `(logior a b)`    | `(logxor a b)`       | `(lognot a)`
 | Standard ML     | `Word.andb(a, b)` | `Word.orb(a, b)`  | `Word.xorb(a, b)`    | `Word.notb(a)` | `a` and `b` must be converted to [Words](https://smlfamily.github.io/Basis/word.html), i.e. `Word.fromInt(a)`
 
-##### Bitshift Operators
+#### Bitshift Operators
 
 | Language\Op     | left                   | right signed            | right unsigned
 | --------------- | ---------------------- | ----------------------- | --------------
@@ -716,7 +764,7 @@ end
 | Scheme          | `(ash a b)`            | `(ash a (- b))`
 | Standard ML     | `Word.<<(a, b)`        | `Word.~>>(a, b)`        | `Word.>>(a, b)`
 
-###### Lua Bitshift
+##### Lua Bitshift
 
 ```lua
 --- Signed bitshift right
@@ -727,15 +775,15 @@ function sar(a, b)
 end
 ```
 
-###### Python Bitshift
+##### Python Bitshift
 
 ```python
-def shr(a, b: int):
+def shr(a, b: int) -> int:
     "Unsigned bitshift right"
     return (a >> b) & 0x7fffffffffffffff
 ```
 
-###### Crystal & Ruby Bitshift
+##### Crystal & Ruby Bitshift
 
 ```ruby
 ##
@@ -745,13 +793,13 @@ def shr(a, b)
 end
 ```
 
-#### Variables
+### Variables
 
 Languages are assumed to be lexically scoped, with implicitly declared local
 scopes in function declarations and implicit local scoping of declarations
 unless otherwise stated.
 
-##### Variable Declaration
+#### Variable Declaration
 
 |                 | Variable        | Constant           | Comptime Const | Hoisted
 | --------------- | --------------- | ------------------ | -------------- | -------
@@ -772,7 +820,7 @@ unless otherwise stated.
 | Shell           | `x=y`
 | Standard ML     |                 | `val x = y;`
 
-###### Scoping: Awk
+##### Scoping: Awk
 
 All variables are globally scoped and implicitly declared. In functions, the
 convention is to declare additional parameters to use as local variables.
@@ -784,24 +832,24 @@ function doSomething(x, y,             a, b, c) {
 }
 ```
 
-###### Scoping: C
+##### Scoping: C
 
 In ANSI C, all variables must be declared at the beginning of the function, but
 this restriction is loosened in later C standards.
 
-###### Const: C
+##### Const: C
 
 In C, `const` is a type descriptor, rather than a keyword introducing a
 variable declaration.
 
-###### Scoping: JavaScript
+##### Scoping: JavaScript
 
 The `var` keyword in JavaScript declares a hoisted variable. Hoisted variable
 are implicitly moved to the beginning of the variable's scope, and can be
 referred to before their declaration. The `let` and `const` keywords were
 introduced in ES6, which have block scoping.
 
-###### Scoping: Julia
+##### Scoping: Julia
 
 Julia has [global and local lexical scoping](https://docs.julialang.org/en/v1/manual/variables-and-scoping/#scope-of-variables). Global scoping works differently
 from other languages, in that declaring a module introduces a new global scope.
@@ -820,13 +868,13 @@ local scope, and any variable declaration within it is implicitly local.
 implicitly global, the `local` keyword must be used to scope a variable to a
 `begin` block.
 
-###### Scoping: Lua
+##### Scoping: Lua
 
 Functions, `do`, `while`, `for` and `repeat` blocks all introduce a new local
 scope. [Variables are implicitly global](https://www.lua.org/manual/5.4/manual.html#3.5),
 and the `local` keyword must be used to locally scope a variable.
 
-#### List Operations
+### List Operations
 
 | Language\Op     | Literal syntax         | List comparison       | `==` empty list
 | --------------- | ---------------------- | --------------------- | ---------------
@@ -844,7 +892,7 @@ and the `local` keyword must be used to locally scope a variable.
 | Shell           | `(1 2 3)`
 | Standard ML     | `[1, 2, 3]`            | `=`                   | `[]` `nil`
 
-##### JavaScript List Compare
+#### JavaScript List Compare
 
 ```js
 function listCompare(left, right) {
@@ -860,7 +908,7 @@ function listCompare(left, right) {
 }
 ```
 
-##### Lua List Compare
+#### Lua List Compare
 
 ```lua
 local function list_compare(left, right)
@@ -895,7 +943,7 @@ end
 | Scheme          | `(cons x xs)`            | `(car xs)`
 | Standard ML     | `x :: xs`                |                       | `xs @ [x]`
 
-#### Errors
+### Errors
 
 Each code snippet shows off features which are available to the language.
 Documents:
@@ -906,7 +954,7 @@ Documents:
 - `assert` functionality, if any
 - Whether the default message on assertions is of any use in figuring out which assertion failed
 
-##### JavaScript Errors
+#### JavaScript Errors
 
 - [mdn Error object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#examples)
 - [Deno assert docs](https://deno.land/std@0.183.0/testing/asserts.ts?doc=)
@@ -929,7 +977,7 @@ import { assert } from 'https://deno.land/std/testing/asserts.ts'
 assert(1 === 1, 'Default message useless')
 ```
 
-##### Julia Errors
+#### Julia Errors
 
 ```julia
 try
@@ -943,7 +991,7 @@ end
 @assert 1 == 1 "Default message useful"
 ```
 
-##### Lua Errors
+#### Lua Errors
 
 - [Error Handling in Lua](https://www.lua.org/manual/5.4/manual.html#2.3)
 
@@ -958,7 +1006,7 @@ else
 end
 ```
 
-##### Nim Errors
+#### Nim Errors
 
 - [Nim Manual: Exception Handling](https://nim-lang.org/docs/manual.html#exception-handling)
 - [Nim Manual: system/assertions](https://nim-lang.org/docs/assertions.html)
@@ -997,7 +1045,7 @@ finally:
 
 ```
 
-##### Python Errors
+#### Python Errors
 
 ```py
 try:
@@ -1014,7 +1062,7 @@ finally:
 assert 1 == 1, "Default message useless"
 ```
 
-##### Ruby Errors
+#### Ruby Errors
 
 ```ruby
 begin
@@ -1030,7 +1078,7 @@ ensure
 end
 ```
 
-#### Systems of Reuse
+### Type Systems and Systems of Reuse
 
 Languages have different methods of reusing generic methods defined on a type
 hierarchy or prototype chain.
@@ -1039,22 +1087,201 @@ The most commonly encountered system is a class based single inheritance model.
 With this model, each object is defined as a *class* which can *inherit*
 features from a *parent* or *super* class.
 
-##### JavaScript Classes and Prototypes
+#### JavaScript Classes and Prototypes
 
 In early versions, JavaScript used a prototype chain for inheritance. When ES6
 was released, a `class` keyword was added, which mimics the more commonly known
 style of class based inheritance, but still uses the original prototype system
 under the hood.
 
-This makes it easy to write code in the class based style
+This makes it easy to write code in the class based style. JavaScript classes
+can be transpiled to pre-ES6, although this is less common now as ES6 has been
+around for a while.
 
-##### Julia Structs and Multiple Dispatch
+```js
+class Pet {
+    // fields can optionally be listed for documentation purposes
+    // JSDoc types can be added for type checking
 
-##### Lua Tables and Metatables
+    /** @type {string} */
+    name
 
-#### Profiling
+    /** @param {string} name the pet's name */
+    constructor(name) {
+        this.name = name
+    }
 
-##### Profiling: Julia
+    // return type annotations are optional, these can usually be inferred
+    /** @returns {string} */
+    speak() {
+        return 'Grr!'
+    }
+}
+
+class Dog extends Pet {
+    // `name` and default constructor inherited from Pet
+
+    speak() {
+        return 'Woof!'
+    }
+}
+
+class Cat extends Pet {
+    // private fields are prefixed by a #
+    /** @type {'fish' | 'milk' | 'chicken'} */
+    #food
+
+    constructor(name, food = 'fish') {
+        // calls the superclass's constructor function
+        // call as early as possible in the subclass's constructor
+        super(name)
+        this.#food = food
+    }
+
+    speak() {
+        return 'Meow!'
+    }
+
+    // getters and setters are called when a field is read from/written to
+    // `x = this.food` calls the getter
+    get food() {
+        return this.#food
+    }
+    // `this.food = 'fish'` calls the setter
+    set food(food) {
+        if (['fish', 'milk', 'chicken'].includes(food)) {
+            this.#food = food
+        }
+    }
+}
+
+const felix = new Cat('Felix', 'milk')
+felix.food              //= 'milk'
+felix.speak()           //= 'Meow!'
+felix instanceof Cat    //= true
+```
+
+#### Julia Structs and Multiple Dispatch
+
+Julia's type system is `abstract type`s and `struct`s. Abstract types can't be
+directly instantiated, they can only extended by structs or other abstract
+types, or used as an annotation for a generic method. Structs can inherit from
+abstract types and exist at runtime, but cannot be extended further. The type
+system can be visualised as a rose tree where the inner nodes are abstract
+types, the leaf nodes are structs and the root node is `Any`, the top type.
+
+When a function is called, the dispatch system chooses which method to call by
+starting at the most concrete type, and if a method is not defined for that
+type, the dispatcher ascends the type tree until a suitable method is found.
+
+Julia's JIT compilation and aggressive inlining mean its often possible to write
+a high level generic function defined in terms of other functions which are
+defined for concrete types, and compile time specialisation will generate
+efficient machine code from generic code. In this sense, Julia's multiple
+dispatch system can be thought of as compile time pattern matching over types.
+
+```julia
+speak(_) = "Grr!"
+
+abstract type Pet end
+name(::Pet) = "unknown"
+
+struct Dog <: Pet
+    name::String
+end
+name(dog::Dog) = dog.name
+speak(::Dog) = "Woof!"
+
+@enum CatFood fish milk chicken
+
+struct Cat <: Pet
+    name::String
+    food::CatFood
+
+    # inner constructors are called when the struct is instantiated
+    # and can be used to ensure invariants
+    function Cat(name::String, food::CatFood = milk)
+        if food == chicken
+            # `new` is the default constructor
+            new(name, milk)
+        else
+            new(name, food)
+        end
+    end
+end
+
+# outer constructors are convenience methods for easy instantiation and default values
+Cat(food::CatFood = milk) = Cat("stray", food)
+Cat(n::Integer) = Cat(CatFood(n))
+
+name(cat::Cat) = cat.name
+speak(::Cat) = "Meow!"
+
+felix = Cat("Felix")
+felix.food      ##= milk
+speak(felix)    ##= "Meow!"
+felix isa Cat   ##= true
+```
+
+#### Lua Tables and Metatables
+
+Lua's metatables are similar to prototypal inheritance, with a layer of
+indirection which allows for more flexibility.
+
+Lua has no in-built mechanism for chained or multiple inheritance, but this can
+be managed with the use of an `__index` metamethod to define any inheritance
+style that is desired.
+
+```lua
+---@class Pet
+---@field name string
+local Pet = { __name = "Pet" }
+Pet.__index = Pet
+
+---@return string
+function Pet:speak()
+    return "Grr!"
+end
+
+local Enum = { __name = "Enum" }
+Enum.__index = Enum
+
+local function Enum:__call(enum)
+    for i, v in ipairs(enum) do
+        enum[v] = i
+    end
+    return setmetatable(enum, Enum)
+end
+
+---@enum CatFood
+local CatFood = Enum({ "fish", "milk", "chicken" })
+
+---@class Cat
+---@field name string
+local Cat = { __name = "Cat" }
+
+---@param name string
+---@return Cat
+function Cat:__call(name, food)
+    food = food or CatFood.milk
+    return setmetatable({ name = name }, Cat)
+end
+
+-- called if cat[key] is accessed and cat[key] is not bound to a value
+function Cat:__index(key)
+    if Cat[key] ~= nil then
+        return Cat[key]
+    else
+        return Pet[key]
+    end
+end
+
+local felix = Cat("Felix")
+```
+
+### Profiling
+
+#### Profiling: Julia
 
 The macro `@time` is used to print the time taken for an expression to evaluate.
 `@timev` prints more detailed information, `@timed` returns a named tuple with
@@ -1083,7 +1310,7 @@ julia> @timed fib(30)
 (value = 1346269, time = 0.007914938, bytes = 0, gctime = 0.0, gcstats = Base.GC_Diff(0, 0, 0, 0, 0, 0, 0, 0, 0))
 ```
 
-##### Profiling: Prolog
+#### Profiling: Prolog
 
 There are no ISO Prolog predicates for profiling. SWI-Prolog provides
 [`library(statistics)`](https://www.swi-prolog.org/pldoc/man?section=statistics). The predicate `time/1` prints the run time of the given goal. See also [`library(prolog_profile)`](https://eu.swi-prolog.org/pldoc/man?section=profile),
@@ -1132,11 +1359,6 @@ syntax and basic idioms of all of the languages listed.
 
 - [Crystal Reference](https://crystal-lang.org/reference)
 - [Crystal Standard Library](https://crystal-lang.org/api)
-
-#### D Reference
-
-- [D Language Reference](https://dlang.org/spec/spec.html)
-- [D Library Reference](https://dlang.org/phobos/index.html)
 
 #### Haskell Reference
 
